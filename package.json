@@ -2,7 +2,7 @@
   "name": "fetch-blob",
   "version": "1.0.2",
   "description": "A Blob implementation on node.js, originally from node-fetch",
-  "main": "index.js",
+  "main": "blob.js",
   "scripts": {
     "test": "ava",
     "report": "nyc ava",
