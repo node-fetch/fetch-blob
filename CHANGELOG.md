@@ -2,6 +2,10 @@
 Changelog
 =========
 
+## v1.0.3
+
+- Fix: package.json export `blob.js` properly now
+
 ## v1.0.2
 
 - Other: fix test integration
