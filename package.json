@@ -4,7 +4,9 @@
   "description": "A Blob implementation on node.js, originally from node-fetch",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "report": "nyc ava",
+    "coverage": "nyc report --reporter json --reporter text && codecov -f coverage/coverage-final.json"
   },
   "repository": {
     "type": "git",
@@ -22,7 +24,9 @@
   "homepage": "https://github.com/bitinn/fetch-blob#readme",
   "devDependencies": {
     "ava": "^1.4.1",
+    "codecov": "^3.5.0",
     "get-stream": "^5.1.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "nyc": "^14.1.1"
   }
 }
