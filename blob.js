@@ -1,15 +1,14 @@
 // Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
+// Also based on https://github.com/bitinn/node-fetch/blob/v2.5.0/src/blob.js
 // (MIT licensed)
 
-import Stream from 'stream';
-
-// fix for "Readable" isn't a named export issue
+const Stream = require('stream');
 const Readable = Stream.Readable;
 
-export const BUFFER = Symbol('buffer');
+const BUFFER = Symbol('buffer');
 const TYPE = Symbol('type');
 
-export default class Blob {
+class Blob {
 	constructor() {
 		this[TYPE] = '';
 
@@ -43,7 +42,9 @@ export default class Blob {
 
 		this[BUFFER] = Buffer.concat(buffers);
 
-		let type = options && options.type !== undefined && String(options.type).toLowerCase();
+		let type = options &&
+			options.type !== undefined &&
+			String(options.type).toLowerCase();
 		if (type && !/[^\u0020-\u007E]/.test(type)) {
 			this[TYPE] = type;
 		}
@@ -63,11 +64,11 @@ export default class Blob {
 		return Promise.resolve(ab);
 	}
 	stream() {
-		 const readable = new Readable();
-		 readable._read = () => {};
-		 readable.push(this[BUFFER]);
-		 readable.push(null);
-		 return readable;
+		const readable = new Readable();
+		readable._read = () => {};
+		readable.push(this[BUFFER]);
+		readable.push(null);
+		return readable;
 	}
 	toString() {
 		return '[object Blob]'
@@ -117,3 +118,5 @@ Object.defineProperty(Blob.prototype, Symbol.toStringTag, {
 	enumerable: false,
 	configurable: true
 });
+
+module.exports = Blob;
