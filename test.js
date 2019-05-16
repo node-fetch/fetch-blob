@@ -68,11 +68,20 @@ test('Blob slice()', async t => {
 	t.is(await blob2.text(), data.slice(0, 1));
 });
 
-test('Blob works with node-fetch Response', async t => {
+test('Blob works with node-fetch Response.blob()', async t => {
 	let data = 'a=1';
 	let type = 'text/plain';
 	let blob = new Blob([data], { type });
 	let res = new Response(blob);
 	let blob2 = await res.blob();
 	t.is(await blob2.text(), data);
+});
+
+test('Blob works with node-fetch Response.text()', async t => {
+	let data = 'a=1';
+	let type = 'text/plain';
+	let blob = new Blob([data], { type });
+	let res = new Response(blob);
+	let text = await res.text();
+	t.is(text, data);
 });
