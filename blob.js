@@ -1,28 +1,27 @@
 // Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
-// Also based on https://github.com/bitinn/node-fetch/blob/v2.5.0/src/blob.js
 // (MIT licensed)
 
 const Stream = require('stream');
-const Readable = Stream.Readable;
+
+// Fix for "Readable" isn't a named export issue
+const {Readable} = Stream;
 
 const BUFFER = Symbol('buffer');
 const TYPE = Symbol('type');
 
 class Blob {
-	constructor() {
+	constructor(...args) {
 		this[TYPE] = '';
 
-		const blobParts = arguments[0];
-		const options = arguments[1];
+		const blobParts = args[0];
+		const options = args[1];
 
 		const buffers = [];
+		/* eslint-disable-next-line no-unused-vars */
 		let size = 0;
 
 		if (blobParts) {
-			const a = blobParts;
-			const length = Number(a.length);
-			for (let i = 0; i < length; i++) {
-				const element = a[i];
+			blobParts.forEach(element => {
 				let buffer;
 				if (element instanceof Buffer) {
 					buffer = element;
@@ -35,50 +34,62 @@ class Blob {
 				} else {
 					buffer = Buffer.from(typeof element === 'string' ? element : String(element));
 				}
+
 				size += buffer.length;
 				buffers.push(buffer);
-			}
+			});
 		}
 
 		this[BUFFER] = Buffer.concat(buffers);
 
-		let type = options &&
-			options.type !== undefined &&
-			String(options.type).toLowerCase();
+		const type = options && options.type !== undefined && String(options.type).toLowerCase();
 		if (type && !/[^\u0020-\u007E]/.test(type)) {
 			this[TYPE] = type;
 		}
+
+		if (options && Buffer.isBuffer(options.buffer)) {
+			this[BUFFER] = options.buffer;
+		}
 	}
+
 	get size() {
 		return this[BUFFER].length;
 	}
+
 	get type() {
 		return this[TYPE];
 	}
+
 	text() {
-		return Promise.resolve(this[BUFFER].toString())
+		return Promise.resolve(this[BUFFER].toString());
 	}
+
 	arrayBuffer() {
 		const buf = this[BUFFER];
 		const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 		return Promise.resolve(ab);
 	}
+
 	stream() {
 		const readable = new Readable();
-		readable._read = () => {};
+		readable._read = () => { };
 		readable.push(this[BUFFER]);
 		readable.push(null);
 		return readable;
 	}
-	toString() {
-		return '[object Blob]'
-	}
-	slice() {
-		const size = this.size;
 
-		const start = arguments[0];
-		const end = arguments[1];
-		let relativeStart, relativeEnd;
+	toString() {
+		return '[object Blob]';
+	}
+
+	slice(...args) {
+		const {size} = this;
+
+		const start = args[0];
+		const end = args[1];
+		let relativeStart;
+		let relativeEnd;
+
 		if (start === undefined) {
 			relativeStart = 0;
 		} else if (start < 0) {
@@ -86,6 +97,7 @@ class Blob {
 		} else {
 			relativeStart = Math.min(start, size);
 		}
+
 		if (end === undefined) {
 			relativeEnd = size;
 		} else if (end < 0) {
@@ -93,6 +105,7 @@ class Blob {
 		} else {
 			relativeEnd = Math.min(end, size);
 		}
+
 		const span = Math.max(relativeEnd - relativeStart, 0);
 
 		const buffer = this[BUFFER];
@@ -100,16 +113,16 @@ class Blob {
 			relativeStart,
 			relativeStart + span
 		);
-		const blob = new Blob([], { type: arguments[2] });
+		const blob = new Blob([], {type: args[2]});
 		blob[BUFFER] = slicedBuffer;
 		return blob;
 	}
 }
 
 Object.defineProperties(Blob.prototype, {
-	size: { enumerable: true },
-	type: { enumerable: true },
-	slice: { enumerable: true }
+	size: {enumerable: true},
+	type: {enumerable: true},
+	slice: {enumerable: true}
 });
 
 Object.defineProperty(Blob.prototype, Symbol.toStringTag, {
