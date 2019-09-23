@@ -2,6 +2,10 @@
 Changelog
 =========
 
+## v1.0.4
+
+- Other: general code revwrite to pass linting, prepare for `node-fetch` release v3
+
 ## v1.0.3
 
 - Fix: package.json export `blob.js` properly now
