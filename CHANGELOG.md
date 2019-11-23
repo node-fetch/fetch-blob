@@ -2,6 +2,10 @@
 Changelog
 =========
 
+## v1.0.5
+
+- Other: no change to code, update dev dependency to address vulnerability reports
+
 ## v1.0.4
 
 - Other: general code revwrite to pass linting, prepare for `node-fetch` release v3
