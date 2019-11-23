@@ -1,6 +1,6 @@
 {
   "name": "fetch-blob",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A Blob implementation on node.js, originally from node-fetch",
   "main": "blob.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "homepage": "https://github.com/bitinn/fetch-blob#readme",
   "devDependencies": {
     "ava": "^1.4.1",
-    "codecov": "^3.5.0",
+    "codecov": "^3.6.1",
     "get-stream": "^5.1.0",
     "node-fetch": "^2.6.0",
     "nyc": "^14.1.1"
