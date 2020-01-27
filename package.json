@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/bitinn/fetch-blob#readme",
   "devDependencies": {
-    "ava": "^1.4.1",
+    "ava": "^3.1.0",
     "codecov": "^3.6.1",
     "get-stream": "^5.1.0",
     "node-fetch": "^2.6.0",
