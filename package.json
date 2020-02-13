@@ -1,32 +1,34 @@
 {
   "name": "fetch-blob",
   "version": "1.0.5",
-  "description": "A Blob implementation on node.js, originally from node-fetch",
+  "description": "A Blob implementation in Node.js, originally from node-fetch.",
   "main": "blob.js",
   "scripts": {
-    "test": "ava",
+    "lint": "xo",
+    "test": "xo && ava",
     "report": "nyc ava",
     "coverage": "nyc --reporter json --reporter text ava && codecov -f coverage/coverage-final.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bitinn/fetch-blob.git"
-  },
+  "repository": "https://github.com/node-fetch/fetch-blob.git",
   "keywords": [
     "blob",
     "node-fetch"
   ],
+  "engines": {
+    "node": ">=6"
+  },
   "author": "David Frank",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bitinn/fetch-blob/issues"
+    "url": "https://github.com/node-fetch/fetch-blob/issues"
   },
-  "homepage": "https://github.com/bitinn/fetch-blob#readme",
+  "homepage": "https://github.com/node-fetch/fetch-blob#readme",
   "devDependencies": {
-    "ava": "^1.4.1",
+    "ava": "^3.3.0",
     "codecov": "^3.6.1",
     "get-stream": "^5.1.0",
     "node-fetch": "^2.6.0",
-    "nyc": "^14.1.1"
+    "nyc": "^15.0.0",
+    "xo": "^0.26.0"
   }
 }

@@ -7,7 +7,7 @@ fetch-blob
 [![coverage status][codecov-image]][codecov-url]
 [![install size][install-size-image]][install-size-url]
 
-A Blob implementation on node.js, originally from node-fetch
+A Blob implementation in Node.js, originally from node-fetch.
 
 ## Usage
 
