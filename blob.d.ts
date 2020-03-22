@@ -15,4 +15,4 @@ declare const FetchBlob: {
     new(blobParts?: BlobPart[], options?: BlobPropertyBag): FetchBlob
 };
 
-export = FetchBlob;
+export = FetchBlob

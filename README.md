@@ -18,21 +18,22 @@ $ npm install fetch-blob
 ```js
 const Blob = require('fetch-blob');
 const fetch = require('node-fetch');
+
 fetch('https://httpbin.org/post', {
-        method: 'POST',
-        body: new Blob(['hello'], { type: 'text/plain' })
-    })
-    .then(res => res.json()) // expecting a json response
+    method: 'POST',
+    body: new Blob(['hello'], { type: 'text/plain' })
+})
+    .then(res => res.json());
     .then(json => console.log(json));
 ```
 
-See [MDN doc](https://developer.mozilla.org/en-US/docs/Web/API/Blob) and [Tests](https://github.com/bitinn/fetch-blob/blob/master/test.js) for more details.
+See [MDN doc](https://developer.mozilla.org/en-US/docs/Web/API/Blob) and [Tests](https://github.com/node-fetch/fetch-blob/blob/master/test.js) for more details.
 
 [npm-image]: https://flat.badgen.net/npm/v/fetch-blob
 [npm-url]: https://www.npmjs.com/package/fetch-blob
-[travis-image]: https://flat.badgen.net/travis/bitinn/fetch-blob
-[travis-url]: https://travis-ci.org/bitinn/fetch-blob
-[codecov-image]: https://flat.badgen.net/codecov/c/github/bitinn/fetch-blob/master
-[codecov-url]: https://codecov.io/gh/bitinn/fetch-blob
+[travis-image]: https://flat.badgen.net/travis/node-fetch/fetch-blob
+[travis-url]: https://travis-ci.org/node-fetch/fetch-blob
+[codecov-image]: https://flat.badgen.net/codecov/c/github/node-fetch/fetch-blob/master
+[codecov-url]: https://codecov.io/gh/node-fetch/fetch-blob
 [install-size-image]: https://flat.badgen.net/packagephobia/install/fetch-blob
 [install-size-url]: https://packagephobia.now.sh/result?p=fetch-blob
