@@ -8,7 +8,7 @@ Changelog
 
 ## v1.0.4
 
-- Other: general code revwrite to pass linting, prepare for `node-fetch` release v3
+- Other: general code rewrite to pass linting, prepare for `node-fetch` release v3
 
 ## v1.0.3
 
