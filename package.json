@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/node-fetch/fetch-blob#readme",
   "devDependencies": {
-    "ava": "^3.3.0",
+    "ava": "^3.5.1",
     "codecov": "^3.6.5",
     "get-stream": "^5.1.0",
     "node-fetch": "^2.6.0",
