@@ -1,5 +1,5 @@
 const test = require('ava');
-const Blob = require('./blob');
+const Blob = require('.');
 const getStream = require('get-stream');
 const {Response} = require('node-fetch');
 
@@ -66,8 +66,8 @@ test('Blob works with node-fetch Response.blob()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
-	const res = new Response(blob);
-	const blob2 = await res.blob();
+	const response = new Response(blob);
+	const blob2 = await response.blob();
 	t.is(await blob2.text(), data);
 });
 
@@ -75,7 +75,7 @@ test('Blob works with node-fetch Response.text()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
-	const res = new Response(blob);
-	const text = await res.text();
+	const response = new Response(blob);
+	const text = await response.text();
 	t.is(text, data);
 });

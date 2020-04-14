@@ -1,19 +1,19 @@
-
-fetch-blob
-==========
+# fetch-blob
 
 [![npm version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![coverage status][codecov-image]][codecov-url]
 [![install size][install-size-image]][install-size-url]
 
-A Blob implementation in Node.js, originally from node-fetch.
+A Blob implementation in Node.js, originally from [node-fetch](https://github.com/node-fetch/node-fetch).
 
-## Usage
+## Installation
 
 ```sh
 $ npm install fetch-blob
 ```
+
+## Usage
 
 ```js
 const Blob = require('fetch-blob');
@@ -27,7 +27,7 @@ fetch('https://httpbin.org/post', {
     .then(json => console.log(json));
 ```
 
-See [MDN doc](https://developer.mozilla.org/en-US/docs/Web/API/Blob) and [Tests](https://github.com/node-fetch/fetch-blob/blob/master/test.js) for more details.
+See the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/Blob) and [tests](https://github.com/node-fetch/fetch-blob/blob/master/test.js) for more details.
 
 [npm-image]: https://flat.badgen.net/npm/v/fetch-blob
 [npm-url]: https://www.npmjs.com/package/fetch-blob
