@@ -28,12 +28,12 @@
   },
   "homepage": "https://github.com/node-fetch/fetch-blob#readme",
   "devDependencies": {
-    "ava": "^3.7.0",
-    "codecov": "^3.6.5",
+    "ava": "^3.8.2",
+    "codecov": "^3.7.0",
     "get-stream": "^5.1.0",
     "node-fetch": "^2.6.0",
     "nyc": "^15.0.1",
-    "xo": "^0.29.1"
+    "xo": "^0.30.0"
   },
   "xo": {
     "overrides": [

@@ -3,10 +3,10 @@
 /** A file-like object of immutable, raw data. Blobs represent data that isn't necessarily in a JavaScript-native format. The File interface is based on Blob, inheriting blob functionality and expanding it to support files on the user's system. */
 declare interface FetchBlob extends Blob {
 	[Symbol.toStringTag]: 'Blob';
-	stream(): ReadableStream;
-	text(): Promise<string>;
-	arrayBuffer(): Promise<ArrayBuffer>;
-	toString(): '[object Blob]';
+	stream: () => ReadableStream;
+	text: () => Promise<string>;
+	arrayBuffer: () => Promise<ArrayBuffer>;
+	toString: () => '[object Blob]';
 
 }
 

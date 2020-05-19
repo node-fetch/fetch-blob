@@ -1,7 +1,7 @@
 // Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
 // (MIT licensed)
 
-const {Readable} = require('stream');
+const {Readable: ReadableStream} = require('stream');
 
 const BUFFER = Symbol('buffer');
 const TYPE = Symbol('type');
@@ -68,7 +68,7 @@ class Blob {
 	}
 
 	stream() {
-		const readable = new Readable();
+		const readable = new ReadableStream();
 		readable._read = () => { };
 		readable.push(this[BUFFER]);
 		readable.push(null);
