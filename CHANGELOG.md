@@ -1,6 +1,10 @@
-
 Changelog
 =========
+
+## v1.0.6
+
+- Enhance: use upstream Blob directly in typings (#38)
+- Other: update dependencies
 
 ## v1.0.5
 
