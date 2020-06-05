@@ -7,12 +7,7 @@ const BUFFER = Symbol('buffer');
 const TYPE = Symbol('type');
 
 class Blob {
-	constructor(...args) {
-		this[TYPE] = '';
-
-		const blobParts = args[0];
-		const options = args[1];
-
+	constructor(blobParts = [], options = { type: '' }) {
 		const buffers = [];
 		/* eslint-disable-next-line no-unused-vars */
 		let size = 0;
