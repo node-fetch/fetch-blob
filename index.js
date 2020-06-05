@@ -6,7 +6,7 @@ const {Readable: ReadableStream} = require('stream');
 const wm = new WeakMap();
 
 class Blob {
-	constructor(blobParts = [], options = { type: '' }) {
+	constructor(blobParts = [], options = {type: ''}) {
 		const buffers = [];
 		let size = 0;
 
