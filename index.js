@@ -10,25 +10,23 @@ class Blob {
 		const buffers = [];
 		let size = 0;
 
-		if (blobParts) {
-			blobParts.forEach(element => {
-				let buffer;
-				if (element instanceof Buffer) {
-					buffer = element;
-				} else if (ArrayBuffer.isView(element)) {
-					buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
-				} else if (element instanceof ArrayBuffer) {
-					buffer = Buffer.from(element);
-				} else if (element instanceof Blob) {
-					buffer = wm.get(element).buffer;
-				} else {
-					buffer = Buffer.from(typeof element === 'string' ? element : String(element));
-				}
+		blobParts.forEach(element => {
+			let buffer;
+			if (element instanceof Buffer) {
+				buffer = element;
+			} else if (ArrayBuffer.isView(element)) {
+				buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
+			} else if (element instanceof ArrayBuffer) {
+				buffer = Buffer.from(element);
+			} else if (element instanceof Blob) {
+				buffer = wm.get(element).buffer;
+			} else {
+				buffer = Buffer.from(typeof element === 'string' ? element : String(element));
+			}
 
-				size += buffer.length;
-				buffers.push(buffer);
-			});
-		}
+			size += buffer.length;
+			buffers.push(buffer);
+		});
 
 		const buffer = Buffer.concat(buffers, size);
 
@@ -80,17 +78,17 @@ class Blob {
 		let relativeEnd;
 
 		if (start === undefined) {
-			relativeStart = 0;
+			relativeStart = 0; //
 		} else if (start < 0) {
-			relativeStart = Math.max(size + start, 0);
+			relativeStart = Math.max(size + start, 0); //
 		} else {
 			relativeStart = Math.min(start, size);
 		}
 
 		if (end === undefined) {
-			relativeEnd = size;
+			relativeEnd = size; //
 		} else if (end < 0) {
-			relativeEnd = Math.max(size + end, 0);
+			relativeEnd = Math.max(size + end, 0); //
 		} else {
 			relativeEnd = Math.min(end, size);
 		}
