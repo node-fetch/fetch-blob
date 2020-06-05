@@ -3,13 +3,11 @@
 
 const {Readable: ReadableStream} = require('stream');
 
-const BUFFER = Symbol('buffer');
-const TYPE = Symbol('type');
+const wm = new WeakMap();
 
 class Blob {
 	constructor(blobParts = [], options = { type: '' }) {
 		const buffers = [];
-		/* eslint-disable-next-line no-unused-vars */
 		let size = 0;
 
 		if (blobParts) {
@@ -22,7 +20,7 @@ class Blob {
 				} else if (element instanceof ArrayBuffer) {
 					buffer = Buffer.from(element);
 				} else if (element instanceof Blob) {
-					buffer = element[BUFFER];
+					buffer = wm.get(element).buffer;
 				} else {
 					buffer = Buffer.from(typeof element === 'string' ? element : String(element));
 				}
@@ -34,27 +32,29 @@ class Blob {
 
 		const buffer = Buffer.concat(buffers, size);
 
-		const type = options && options.type !== undefined && String(options.type).toLowerCase();
-		if (type && !/[^\u0020-\u007E]/.test(type)) {
-			this[TYPE] = type;
-		}
+		const type = options.type === undefined ? '' : String(options.type).toLowerCase();
 
+		wm.set(this, {
+			type: /[^\u0020-\u007E]/.test(type) ? '' : type,
+			size,
+			buffer
+		});
 	}
 
 	get size() {
-		return this[BUFFER].length;
+		return wm.get(this).size;
 	}
 
 	get type() {
-		return this[TYPE];
+		return wm.get(this).type;
 	}
 
 	text() {
-		return Promise.resolve(this[BUFFER].toString());
+		return Promise.resolve(wm.get(this).buffer.toString());
 	}
 
 	arrayBuffer() {
-		const buf = this[BUFFER];
+		const buf = wm.get(this).buffer;
 		const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 		return Promise.resolve(ab);
 	}
@@ -62,7 +62,7 @@ class Blob {
 	stream() {
 		const readable = new ReadableStream();
 		readable._read = () => { };
-		readable.push(this[BUFFER]);
+		readable.push(wm.get(this).buffer);
 		readable.push(null);
 		return readable;
 	}
@@ -96,14 +96,13 @@ class Blob {
 		}
 
 		const span = Math.max(relativeEnd - relativeStart, 0);
-
-		const buffer = this[BUFFER];
-		const slicedBuffer = buffer.slice(
+		const slicedBuffer = wm.get(this).buffer.slice(
 			relativeStart,
 			relativeStart + span
 		);
 		const blob = new Blob([], {type: args[2]});
-		blob[BUFFER] = slicedBuffer;
+		const _ = wm.get(blob);
+		_.buffer = slicedBuffer;
 		return blob;
 	}
 }
