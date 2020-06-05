@@ -32,7 +32,7 @@ class Blob {
 			});
 		}
 
-		this[BUFFER] = Buffer.concat(buffers);
+		const buffer = Buffer.concat(buffers, size);
 
 		const type = options && options.type !== undefined && String(options.type).toLowerCase();
 		if (type && !/[^\u0020-\u007E]/.test(type)) {
