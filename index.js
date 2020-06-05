@@ -44,9 +44,6 @@ class Blob {
 			this[TYPE] = type;
 		}
 
-		if (options && Buffer.isBuffer(options.buffer)) {
-			this[BUFFER] = options.buffer;
-		}
 	}
 
 	get size() {
