@@ -17,16 +17,15 @@ test('new Blob(parts)', t => {
 test('Blob ctor parts', async t => {
 	const parts = [
 		'a',
-		new Uint8Array([98]), // b
-		new Uint16Array([25699]), // cd
-		new Uint8Array([101]).buffer, // e
+		new Uint8Array([98]),
+		new Uint16Array([25699]),
+		new Uint8Array([101]).buffer,
 		Buffer.from('f'),
 		new Blob(['g']),
 		{}
 	];
 
 	const blob = new Blob(parts);
-	console.log(await blob.text())
 	t.is(await blob.text(), 'abcdefg[object Object]');
 });
 
