@@ -3,10 +3,30 @@ const Blob = require('.');
 const getStream = require('get-stream');
 const {Response} = require('node-fetch');
 
-test('Blob ctor', t => {
+test('new Blob()', t => {
+	const blob = new Blob(); // eslint-disable-line no-unused-vars
+	t.pass();
+});
+
+test('new Blob(parts)', t => {
 	const data = 'a=1';
 	const blob = new Blob([data]); // eslint-disable-line no-unused-vars
 	t.pass();
+});
+
+test('Blob ctor parts', async t => {
+	const parts = [
+		'a',
+		new Uint8Array([98]),
+		new Uint16Array([25699]),
+		new Uint8Array([101]).buffer,
+		Buffer.from('f'),
+		new Blob(['g']),
+		{}
+	];
+
+	const blob = new Blob(parts);
+	t.is(await blob.text(), 'abcdefg[object Object]');
 });
 
 test('Blob size', t => {
@@ -16,10 +36,25 @@ test('Blob size', t => {
 });
 
 test('Blob type', t => {
-	const data = 'a=1';
 	const type = 'text/plain';
-	const blob = new Blob([data], {type});
+	const blob = new Blob([], {type});
 	t.is(blob.type, type);
+});
+
+test('Blob slice type', t => {
+	const type = 'text/plain';
+	const blob = new Blob().slice(0, 0, type);
+	t.is(blob.type, type);
+});
+
+test('invalid Blob type', t => {
+	const blob = new Blob([], {type: '\u001Ftext/plain'});
+	t.is(blob.type, '');
+});
+
+test('invalid Blob slice type', t => {
+	const blob = new Blob().slice(0, 0, '\u001Ftext/plain');
+	t.is(blob.type, '');
 });
 
 test('Blob text()', async t => {
@@ -55,11 +90,27 @@ test('Blob toString()', t => {
 });
 
 test('Blob slice()', async t => {
-	const data = 'a=1';
-	const type = 'text/plain';
-	const blob = new Blob([data], {type});
-	const blob2 = blob.slice(0, 1);
-	t.is(await blob2.text(), data.slice(0, 1));
+	const data = 'abcdefgh';
+	const blob = new Blob([data]).slice();
+	t.is(await blob.text(), data);
+});
+
+test('Blob slice(0, 1)', async t => {
+	const data = 'abcdefgh';
+	const blob = new Blob([data]).slice(0, 1);
+	t.is(await blob.text(), 'a');
+});
+
+test('Blob slice(-1)', async t => {
+	const data = 'abcdefgh';
+	const blob = new Blob([data]).slice(-1);
+	t.is(await blob.text(), 'h');
+});
+
+test('Blob slice(0, -1)', async t => {
+	const data = 'abcdefgh';
+	const blob = new Blob([data]).slice(0, -1);
+	t.is(await blob.text(), 'abcdefg');
 });
 
 test('Blob works with node-fetch Response.blob()', async t => {
