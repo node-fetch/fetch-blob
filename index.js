@@ -1,7 +1,7 @@
 const {Readable} = require('stream');
 
 /**
- * @type {WeakMap<Blob, { type: string, size: number, parts: Array }}
+ * @type {WeakMap<Blob, {type: string, size: number, parts: (Blob | Buffer)[] }>}
  */
 const wm = new WeakMap();
 
