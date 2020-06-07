@@ -10,7 +10,7 @@ A Blob implementation in Node.js, originally from [node-fetch](https://github.co
 ## Installation
 
 ```sh
-$ npm install fetch-blob
+npm install fetch-blob
 ```
 
 ## Usage
@@ -21,7 +21,7 @@ const fetch = require('node-fetch');
 
 fetch('https://httpbin.org/post', {
     method: 'POST',
-    body: new Blob(['hello'], { type: 'text/plain' })
+    body: new Blob(['Hello World'], { type: 'text/plain' })
 })
     .then(res => res.json());
     .then(json => console.log(json));
