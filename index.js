@@ -1,106 +1,170 @@
-// Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
-// (MIT licensed)
+const {Readable} = require('stream');
 
-const {Readable: ReadableStream} = require('stream');
-
+/**
+ * @type {WeakMap<Blob, {type: string, size: number, parts: (Blob | Buffer)[] }>}
+ */
 const wm = new WeakMap();
 
+async function * read(parts) {
+	for (const part of parts) {
+		if ('stream' in part) {
+			yield * part.stream();
+		} else {
+			yield part;
+		}
+	}
+}
+
+/**
+ * @template T
+ * @param {T} object
+ * @returns {T is Blob}
+ */
+const isBlob = object => {
+	return (
+		typeof object === 'object' &&
+		typeof object.stream === 'function' &&
+		typeof object.constructor === 'function' &&
+		/^(Blob|File)$/.test(object[Symbol.toStringTag])
+	);
+};
+
 class Blob {
+	/**
+	 * The Blob() constructor returns a new Blob object. The content
+	 * of the blob consists of the concatenation of the values given
+	 * in the parameter array.
+	 *
+	 * @param {(ArrayBufferLike | ArrayBufferView | Blob | Buffer | string)[]} blobParts
+	 * @param {{ type?: string }} [options]
+	 */
 	constructor(blobParts = [], options = {type: ''}) {
-		const buffers = [];
 		let size = 0;
 
-		blobParts.forEach(element => {
+		const parts = blobParts.map(element => {
 			let buffer;
-			if (element instanceof Buffer) {
+			if (Buffer.isBuffer(element)) {
 				buffer = element;
 			} else if (ArrayBuffer.isView(element)) {
 				buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
 			} else if (element instanceof ArrayBuffer) {
 				buffer = Buffer.from(element);
-			} else if (element instanceof Blob) {
-				buffer = wm.get(element).buffer;
+			} else if (isBlob(element)) {
+				buffer = element;
 			} else {
 				buffer = Buffer.from(typeof element === 'string' ? element : String(element));
 			}
 
-			size += buffer.length;
-			buffers.push(buffer);
+			size += buffer.length || buffer.size || 0;
+			return buffer;
 		});
-
-		const buffer = Buffer.concat(buffers, size);
 
 		const type = options.type === undefined ? '' : String(options.type).toLowerCase();
 
 		wm.set(this, {
 			type: /[^\u0020-\u007E]/.test(type) ? '' : type,
 			size,
-			buffer
+			parts
 		});
 	}
 
+	/**
+	 * The Blob interface's size property returns the
+	 * size of the Blob in bytes.
+	 */
 	get size() {
 		return wm.get(this).size;
 	}
 
+	/**
+	 * The type property of a Blob object returns the MIME type of the file.
+	 */
 	get type() {
 		return wm.get(this).type;
 	}
 
-	text() {
-		return Promise.resolve(wm.get(this).buffer.toString());
+	/**
+	 * The text() method in the Blob interface returns a Promise
+	 * that resolves with a string containing the contents of
+	 * the blob, interpreted as UTF-8.
+	 *
+	 * @return {Promise<string>}
+	 */
+	async text() {
+		return Buffer.from(await this.arrayBuffer()).toString();
 	}
 
-	arrayBuffer() {
-		const buf = wm.get(this).buffer;
-		const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-		return Promise.resolve(ab);
+	/**
+	 * The arrayBuffer() method in the Blob interface returns a
+	 * Promise that resolves with the contents of the blob as
+	 * binary data contained in an ArrayBuffer.
+	 *
+	 * @return {Promise<ArrayBuffer>}
+	 */
+	async arrayBuffer() {
+		const data = new Uint8Array(this.size);
+		let offset = 0;
+		for await (const chunk of this.stream()) {
+			data.set(chunk, offset);
+			offset += chunk.length;
+		}
+
+		return data.buffer;
 	}
 
+	/**
+	 * The Blob interface's stream() method is difference from native
+	 * and uses node streams instead of whatwg streams.
+	 *
+	 * @returns {Readable} Node readable stream
+	 */
 	stream() {
-		const readable = new ReadableStream();
-		readable._read = () => { };
-		readable.push(wm.get(this).buffer);
-		readable.push(null);
-		return readable;
+		return Readable.from(read(wm.get(this).parts));
 	}
 
-	toString() {
-		return '[object Blob]';
-	}
-
-	slice(...args) {
+	/**
+	 * The Blob interface's slice() method creates and returns a
+	 * new Blob object which contains data from a subset of the
+	 * blob on which it's called.
+	 *
+	 * @param {number} [start]
+	 * @param {number} [end]
+	 * @param {string} [contentType]
+	 */
+	slice(start = 0, end = this.size, type = '') {
 		const {size} = this;
 
-		const start = args[0];
-		const end = args[1];
-		let relativeStart;
-		let relativeEnd;
-
-		if (start === undefined) {
-			relativeStart = 0; //
-		} else if (start < 0) {
-			relativeStart = Math.max(size + start, 0); //
-		} else {
-			relativeStart = Math.min(start, size);
-		}
-
-		if (end === undefined) {
-			relativeEnd = size; //
-		} else if (end < 0) {
-			relativeEnd = Math.max(size + end, 0); //
-		} else {
-			relativeEnd = Math.min(end, size);
-		}
+		let relativeStart = start < 0 ? Math.max(size + start, 0) : Math.min(start, size);
+		let relativeEnd = end < 0 ? Math.max(size + end, 0) : Math.min(end, size);
 
 		const span = Math.max(relativeEnd - relativeStart, 0);
-		const slicedBuffer = wm.get(this).buffer.slice(
-			relativeStart,
-			relativeStart + span
-		);
-		const blob = new Blob([], {type: args[2]});
-		const _ = wm.get(blob);
-		_.buffer = slicedBuffer;
+		const parts = wm.get(this).parts.values();
+		const blobParts = [];
+		let added = 0;
+
+		for (const part of parts) {
+			const size = ArrayBuffer.isView(part) ? part.byteLength : part.size;
+			if (relativeStart && size <= relativeStart) {
+				// Skip the beginning and change the relative
+				// start & end position as we skip the unwanted parts
+				relativeStart -= size;
+				relativeEnd -= size;
+			} else {
+				const chunk = part.slice(relativeStart, Math.min(size, relativeEnd));
+				blobParts.push(chunk);
+				added += size;
+				relativeStart = 0; // All next sequental parts should start at 0
+
+				// don't add the overflow to new blobParts
+				if (added >= span) {
+					break;
+				}
+			}
+		}
+
+		const blob = new Blob([], {type});
+		Object.assign(wm.get(blob), {size: span, parts: blobParts});
+
 		return blob;
 	}
 }

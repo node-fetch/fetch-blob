@@ -113,6 +113,11 @@ test('Blob slice(0, -1)', async t => {
 	t.is(await blob.text(), 'abcdefg');
 });
 
+test('throw away unwanted parts', async t => {
+	const blob = new Blob(['a', 'b', 'c']).slice(1, 2);
+	t.is(await blob.text(), 'b');
+});
+
 test('Blob works with node-fetch Response.blob()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
