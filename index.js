@@ -1,5 +1,8 @@
 const {Readable} = require('stream');
 
+/**
+ * @type {WeakMap<Blob, { type: string, size: number, parts: Array }}
+ */
 const wm = new WeakMap();
 
 async function * read(parts) {
@@ -12,6 +15,11 @@ async function * read(parts) {
 	}
 }
 
+/**
+ * @template T
+ * @param {T} object
+ * @returns {T is Blob}
+ */
 const isBlob = object => {
 	return (
 		typeof object === 'object' &&
@@ -35,7 +43,7 @@ class Blob {
 
 		const parts = blobParts.map(element => {
 			let buffer;
-			if (element instanceof Buffer) {
+			if (Buffer.isBuffer(element)) {
 				buffer = element;
 			} else if (ArrayBuffer.isView(element)) {
 				buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
@@ -112,13 +120,6 @@ class Blob {
 	 */
 	stream() {
 		return Readable.from(read(wm.get(this).parts));
-	}
-
-	/**
-	 * @returns {string}
-	 */
-	toString() {
-		return '[object Blob]';
 	}
 
 	/**
