@@ -144,7 +144,7 @@ class Blob {
 
 		for (const part of parts) {
 			const size = ArrayBuffer.isView(part) ? part.byteLength : part.size;
-			if (relativeStart && size < relativeStart) {
+			if (relativeStart && size <= relativeStart) {
 				// Skip the beginning and change the relative
 				// start & end position as we skip the unwanted parts
 				relativeStart -= size;
