@@ -11,7 +11,8 @@
     "lint": "xo",
     "test": "xo && ava",
     "report": "nyc ava",
-    "coverage": "nyc --reporter json --reporter text ava && codecov -f coverage/coverage-final.json"
+    "coverage": "nyc --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
+    "prepublishOnly": "npx typescript --declaration --emitDeclarationOnly --allowJs index.js"
   },
   "repository": "https://github.com/node-fetch/fetch-blob.git",
   "keywords": [
