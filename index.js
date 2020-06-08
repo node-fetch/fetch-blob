@@ -129,7 +129,7 @@ class Blob {
 	 *
 	 * @param {number} [start]
 	 * @param {number} [end]
-	 * @param {string} [contentType]
+	 * @param {string} [type]
 	 */
 	slice(start = 0, end = this.size, type = '') {
 		const {size} = this;
