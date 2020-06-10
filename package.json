@@ -12,7 +12,7 @@
     "test": "xo && ava",
     "report": "nyc ava",
     "coverage": "nyc --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
-    "prepublishOnly": "npx 'typescript@>3.7' --declaration --emitDeclarationOnly --allowJs index.js"
+    "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js"
   },
   "repository": "https://github.com/node-fetch/fetch-blob.git",
   "keywords": [
@@ -34,6 +34,7 @@
     "get-stream": "^5.1.0",
     "node-fetch": "^2.6.0",
     "nyc": "^15.0.1",
+    "typescript": "^3.9.5",
     "xo": "^0.30.0"
   },
   "xo": {
