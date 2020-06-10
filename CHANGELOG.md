@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## v1.0.7
+
+- Enhance: create TypeScript declarations from JSDoc (#45)
+- Enhance: operate on blob parts (byte sequence) (#44)
+- Enhance: use a `WeakMap` for private properties (#42) 
+- Other: update formatting
+
 ## v1.0.6
 
 - Enhance: use upstream Blob directly in typings (#38)
