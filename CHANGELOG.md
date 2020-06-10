@@ -1,12 +1,16 @@
 Changelog
 =========
 
-## v1.0.7
+## v2.0.0
 
-- Enhance: create TypeScript declarations from JSDoc (#45)
-- Enhance: operate on blob parts (byte sequence) (#44)
-- Enhance: use a `WeakMap` for private properties (#42) 
-- Other: update formatting
+> Note: This release was previously published as `1.0.7`, but as it contains breaking changes, we renamed it to `2.0.0`.
+
+- **Breaking:** minimum supported Node.js version is now 10.17.
+- **Breaking:** `buffer` option has been removed.
+- Enhance: create TypeScript declarations from JSDoc (#45).
+- Enhance: operate on blob parts (byte sequence) (#44).
+- Enhance: use a `WeakMap` for private properties (#42) .
+- Other: update formatting.
 
 ## v1.0.6
 
