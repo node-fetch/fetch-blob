@@ -1,51 +1,52 @@
 {
-  "name": "fetch-blob",
-  "version": "1.0.6",
-  "description": "A Blob implementation in Node.js, originally from node-fetch.",
-  "main": "index.js",
-  "files": [
-    "index.js",
-    "index.d.ts"
-  ],
-  "scripts": {
-    "lint": "xo",
-    "test": "xo && ava",
-    "report": "nyc ava",
-    "coverage": "nyc --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
-    "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js"
-  },
-  "repository": "https://github.com/node-fetch/fetch-blob.git",
-  "keywords": [
-    "blob",
-    "node-fetch"
-  ],
-  "engines": {
-    "node": "^10.17.0"
-  },
-  "author": "David Frank",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/node-fetch/fetch-blob/issues"
-  },
-  "homepage": "https://github.com/node-fetch/fetch-blob#readme",
-  "devDependencies": {
-    "ava": "^3.8.2",
-    "codecov": "^3.7.0",
-    "get-stream": "^5.1.0",
-    "node-fetch": "^2.6.0",
-    "nyc": "^15.0.1",
-    "typescript": "^3.9.5",
-    "xo": "^0.32.0"
-  },
-  "xo": {
-    "overrides": [
-      {
-        "files": "test.js",
-        "rules": {
-          "node/no-unsupported-features/es-syntax": 0,
-          "node/no-unsupported-features/node-builtins": 0
-        }
-      }
-    ]
-  }
+    "name": "fetch-blob",
+    "version": "1.0.6",
+    "description": "A Blob implementation in Node.js, originally from node-fetch.",
+    "main": "index.js",
+    "files": [
+        "index.js",
+        "index.d.ts"
+    ],
+    "scripts": {
+        "lint": "xo",
+        "test": "xo && ava",
+        "report": "nyc ava",
+        "coverage": "nyc --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
+        "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js"
+    },
+    "repository": "https://github.com/node-fetch/fetch-blob.git",
+    "keywords": [
+        "blob",
+        "node-fetch"
+    ],
+    "engines": {
+        "node": "^10.17.0"
+    },
+    "author": "David Frank",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/node-fetch/fetch-blob/issues"
+    },
+    "homepage": "https://github.com/node-fetch/fetch-blob#readme",
+    "devDependencies": {
+        "ava": "^3.8.2",
+        "codecov": "^3.7.0",
+        "get-stream": "^5.1.0",
+        "node-fetch": "^2.6.0",
+        "nyc": "^15.1.0",
+        "typescript": "^3.9.5",
+        "xo": "^0.32.0"
+    },
+    "xo": {
+        "overrides": [
+            {
+                "files": "test.js",
+                "rules": {
+                    "node/no-unsupported-features/es-syntax": 0,
+                    "node/no-unsupported-features/node-builtins": 0
+                }
+            }
+        ]
+    },
+    "dependencies": {}
 }
