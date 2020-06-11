@@ -2,7 +2,7 @@ const test = require('ava');
 const Blob = require('.');
 const getStream = require('get-stream');
 const {Response} = require('node-fetch');
-const {TextDecoder} = require('util')
+const {TextDecoder} = require('util');
 
 test('new Blob()', t => {
 	const blob = new Blob(); // eslint-disable-line no-unused-vars
