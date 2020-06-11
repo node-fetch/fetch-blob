@@ -20,7 +20,7 @@
         "node-fetch"
     ],
     "engines": {
-        "node": "^10.17.0"
+        "node": ">=10.17.0"
     },
     "author": "David Frank",
     "license": "MIT",
