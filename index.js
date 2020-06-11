@@ -15,20 +15,6 @@ async function * read(parts) {
 	}
 }
 
-/**
- * @template T
- * @param {T} object
- * @returns {T is Blob}
- */
-const isBlob = object => {
-	return (
-		typeof object === 'object' &&
-		typeof object.stream === 'function' &&
-		typeof object.constructor === 'function' &&
-		/^(Blob|File)$/.test(object[Symbol.toStringTag])
-	);
-};
-
 class Blob {
 	/**
 	 * The Blob() constructor returns a new Blob object. The content
@@ -43,13 +29,13 @@ class Blob {
 
 		const parts = blobParts.map(element => {
 			let buffer;
-			if (Buffer.isBuffer(element)) {
+			if (element instanceof Buffer) {
 				buffer = element;
 			} else if (ArrayBuffer.isView(element)) {
 				buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
 			} else if (element instanceof ArrayBuffer) {
 				buffer = Buffer.from(element);
-			} else if (isBlob(element)) {
+			} else if (element instanceof Blob) {
 				buffer = element;
 			} else {
 				buffer = Buffer.from(typeof element === 'string' ? element : String(element));
@@ -167,19 +153,26 @@ class Blob {
 
 		return blob;
 	}
+
+	get [Symbol.toStringTag]() {
+		return 'Blob';
+	}
+
+	static [Symbol.hasInstance](object) {
+		return (
+			typeof object === 'object' &&
+			typeof object.stream === 'function' &&
+			object.stream.length === 0 &&
+			typeof object.constructor === 'function' &&
+			/^(Blob|File)$/.test(object[Symbol.toStringTag])
+		);
+	}
 }
 
 Object.defineProperties(Blob.prototype, {
 	size: {enumerable: true},
 	type: {enumerable: true},
 	slice: {enumerable: true}
-});
-
-Object.defineProperty(Blob.prototype, Symbol.toStringTag, {
-	value: 'Blob',
-	writable: false,
-	enumerable: false,
-	configurable: true
 });
 
 module.exports = Blob;
