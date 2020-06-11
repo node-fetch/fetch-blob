@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v2.0.1
+
+- Fix: remove upper bound for node engine semver (#49).
+
 ## v2.0.0
 
 > Note: This release was previously published as `1.0.7`, but as it contains breaking changes, we renamed it to `2.0.0`.
