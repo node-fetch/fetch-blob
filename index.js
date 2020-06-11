@@ -161,7 +161,7 @@ class Blob {
 	static [Symbol.hasInstance](object) {
 		return (
 			typeof object === 'object' &&
-			typeof object.stream === 'function' && 
+			typeof object.stream === 'function' &&
 			object.stream.length === 0 &&
 			typeof object.constructor === 'function' &&
 			/^(Blob|File)$/.test(object[Symbol.toStringTag])
