@@ -1,7 +1,7 @@
 # fetch-blob
 
 [![npm version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
+[![build status][ci-image]][ci-url]
 [![coverage status][codecov-image]][codecov-url]
 [![install size][install-size-image]][install-size-url]
 
@@ -31,8 +31,8 @@ See the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/Blo
 
 [npm-image]: https://flat.badgen.net/npm/v/fetch-blob
 [npm-url]: https://www.npmjs.com/package/fetch-blob
-[travis-image]: https://flat.badgen.net/travis/node-fetch/fetch-blob
-[travis-url]: https://travis-ci.org/node-fetch/fetch-blob
+[ci-image]: https://github.com/node-fetch/fetch-blob/workflows/CI/badge.svg
+[ci-url]: https://github.com/node-fetch/fetch-blob/actions
 [codecov-image]: https://flat.badgen.net/codecov/c/github/node-fetch/fetch-blob/master
 [codecov-url]: https://codecov.io/gh/node-fetch/fetch-blob
 [install-size-image]: https://flat.badgen.net/packagephobia/install/fetch-blob
