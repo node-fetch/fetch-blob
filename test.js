@@ -114,6 +114,12 @@ test('Blob slice(0, -1)', async t => {
 	t.is(await blob.text(), 'abcdefg');
 });
 
+test('Blob(["hello ", "world"]).slice(5)', async t => {
+	const parts = ['hello ', 'world'];
+	const blob = new Blob(parts);
+	t.is(await blob.slice(5).text(), ' world');
+});
+
 test('throw away unwanted parts', async t => {
 	const blob = new Blob(['a', 'b', 'c']).slice(1, 2);
 	t.is(await blob.text(), 'b');
