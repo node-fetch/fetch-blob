@@ -138,7 +138,7 @@ class Blob {
 			} else {
 				const chunk = part.slice(relativeStart, Math.min(size, relativeEnd));
 				blobParts.push(chunk);
-				added += size;
+				added += ArrayBuffer.isView(chunk) ? chunk.byteLength : chunk.size;
 				relativeStart = 0; // All next sequental parts should start at 0
 
 				// don't add the overflow to new blobParts
