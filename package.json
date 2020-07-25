@@ -48,8 +48,7 @@
             }
         ]
     },
-    "dependencies": {},
-    "optionalDependencies": {
+    "peerDependencies": {
         "domexception": "^2.0.1"
     }
 }
