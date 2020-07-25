@@ -28,7 +28,7 @@ fetch('https://httpbin.org/post', {
 ```
 
 ### Blob part backed up by filesystem
-you need to install optional domexception too
+To use, install [domexception](https://github.com/jsdom/domexception).
 
 ```sh
 npm install fetch-blob domexception
