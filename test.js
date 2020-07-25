@@ -1,3 +1,4 @@
+const fs = require('fs');
 const test = require('ava');
 const Blob = require('.');
 const blobFrom = require('./from');
@@ -148,4 +149,14 @@ test('blob part backed up by filesystem', async t => {
 	const blob = blobFrom('./LICENSE');
 	t.is(await blob.slice(0, 3).text(), 'MIT');
 	t.is(await blob.slice(4, 11).text(), 'License');
+});
+
+test('Reading after modified should fail', async t => {
+	const blob = blobFrom('./LICENSE');
+	await new Promise(rs => setTimeout(rs, 100))
+	const now = new Date();
+	// Change modified time
+	fs.utimesSync('./LICENSE', now, now);
+	const error = await blob.text().catch(e => e);
+	t.is(error.name, 'NotReadableError');
 });
