@@ -153,10 +153,10 @@ test('blob part backed up by filesystem', async t => {
 
 test('Reading after modified should fail', async t => {
 	const blob = blobFrom('./LICENSE');
-	await new Promise(rs => setTimeout(rs, 100))
+	await new Promise(resolve => setTimeout(resolve, 100));
 	const now = new Date();
 	// Change modified time
 	fs.utimesSync('./LICENSE', now, now);
-	const error = await blob.text().catch(e => e);
+	const error = await blob.text().catch(error => error);
 	t.is(error.name, 'NotReadableError');
 });
