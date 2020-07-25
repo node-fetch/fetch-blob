@@ -4,6 +4,7 @@ const DOMException = require('domexception');
 
 /**
  * @param {string} path filepath on the disk
+ * @returns {Blob}
  */
 function blobFrom(path) {
 	const {size, mtime} = statSync(path);
