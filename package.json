@@ -4,6 +4,7 @@
     "description": "A Blob implementation in Node.js, originally from node-fetch.",
     "main": "index.js",
     "files": [
+        "from.js",
         "index.js",
         "index.d.ts"
     ],
