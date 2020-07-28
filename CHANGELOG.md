@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v2.1.0
+- Fix: .slice has an implementation bug (#54).
+- Added blob backed up by filesystem (#55)
+
 ## v2.0.1
 
 - Fix: remove upper bound for node engine semver (#49).
