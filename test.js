@@ -1,5 +1,7 @@
+const fs = require('fs');
 const test = require('ava');
 const Blob = require('.');
+const blobFrom = require('./from');
 const getStream = require('get-stream');
 const {Response} = require('node-fetch');
 const {TextDecoder} = require('util');
@@ -141,4 +143,20 @@ test('Blob works with node-fetch Response.text()', async t => {
 	const response = new Response(blob);
 	const text = await response.text();
 	t.is(text, data);
+});
+
+test('blob part backed up by filesystem', async t => {
+	const blob = blobFrom('./LICENSE');
+	t.is(await blob.slice(0, 3).text(), 'MIT');
+	t.is(await blob.slice(4, 11).text(), 'License');
+});
+
+test('Reading after modified should fail', async t => {
+	const blob = blobFrom('./LICENSE');
+	await new Promise(resolve => setTimeout(resolve, 100));
+	const now = new Date();
+	// Change modified time
+	fs.utimesSync('./LICENSE', now, now);
+	const error = await blob.text().catch(error => error);
+	t.is(error.name, 'NotReadableError');
 });

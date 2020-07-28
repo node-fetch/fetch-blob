@@ -27,6 +27,24 @@ fetch('https://httpbin.org/post', {
     .then(json => console.log(json));
 ```
 
+### Blob part backed up by filesystem
+To use, install [domexception](https://github.com/jsdom/domexception).
+
+```sh
+npm install fetch-blob domexception
+```
+
+```js
+const blobFrom = require('fetch-blob/from.js');
+const blob1 = blobFrom('./2-GiB-file.bin');
+const blob2 = blobFrom('./2-GiB-file.bin');
+
+// Not a 4 GiB memory snapshot, just holds 3 references
+// points to where data is located on the disk
+const blob = new Blob([blob1, blob2]);
+console.log(blob.size) // 4 GiB
+```
+
 See the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/Blob) and [tests](https://github.com/node-fetch/fetch-blob/blob/master/test.js) for more details.
 
 [npm-image]: https://flat.badgen.net/npm/v/fetch-blob

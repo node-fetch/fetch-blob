@@ -47,6 +47,7 @@ jobs:
           node-version: ${{steps.get-version.outputs.node}}
 
       - run: npm install
+      - run: npm install domexception
 
       - run: npm run report -- --colors
 
