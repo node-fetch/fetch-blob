@@ -36,7 +36,7 @@
         "get-stream": "^5.1.0",
         "node-fetch": "^2.6.0",
         "typescript": "^3.9.5",
-        "xo": "^0.32.0"
+        "xo": "^0.37.1"
     },
     "xo": {
         "overrides": [
