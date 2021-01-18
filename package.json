@@ -51,5 +51,10 @@
     },
     "peerDependencies": {
         "domexception": "^2.0.1"
+    },
+    "peerDependenciesMeta": {
+        "domexception": {
+            "optional": true
+        }
     }
 }
