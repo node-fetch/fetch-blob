@@ -175,4 +175,4 @@ Object.defineProperties(Blob.prototype, {
 	slice: {enumerable: true}
 });
 
-module.exports = Blob;
+module.exports = require("buffer").Blob || Blob;
