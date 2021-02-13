@@ -27,8 +27,8 @@ class BlobDataItem {
 		this.mtime = options.mtime;
 	}
 
-	// Slicing arguments is validated and formated
-	// by Blob.prototype.slice
+	// Slicing arguments is first validated and formated 
+	// to not be out of range by Blob.prototype.slice
 	slice(start, end) {
 		return new BlobDataItem({
 			path: this.path,
