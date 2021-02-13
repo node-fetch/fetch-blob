@@ -148,7 +148,7 @@ class Blob {
 			}
 		}
 
-		const blob = new Blob([], {type});
+		const blob = new Blob([], {type: String(type).toLowerCase()});
 		Object.assign(wm.get(blob), {size: span, parts: blobParts});
 
 		return blob;
