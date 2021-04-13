@@ -1,5 +1,5 @@
 const {statSync, createReadStream} = require('fs');
-const Blob = require('./index.js');
+const Blob = require('.');
 const DOMException = require('domexception');
 
 /**
@@ -27,7 +27,7 @@ class BlobDataItem {
 		this.mtime = options.mtime;
 	}
 
-	// Slicing arguments is first validated and formated 
+	// Slicing arguments is first validated and formated
 	// to not be out of range by Blob.prototype.slice
 	slice(start, end) {
 		return new BlobDataItem({
