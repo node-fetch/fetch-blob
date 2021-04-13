@@ -62,4 +62,4 @@ typings/
 # dotenv environment variables file
 .env
 
-index.d.ts
+@types

@@ -13,7 +13,7 @@
         "test": "xo && ava",
         "report": "c8 --reporter json --reporter text ava",
         "coverage": "c8 --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
-        "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js"
+        "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs --outDir @types index.js from.js"
     },
     "repository": "https://github.com/node-fetch/fetch-blob.git",
     "keywords": [
