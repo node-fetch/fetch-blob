@@ -173,6 +173,6 @@ test('Blob-ish class is an instance of Blob', t => {
 	t.true(new File() instanceof Blob);
 });
 
-test('Nullish value returns false for instanceof check with Blob', t => {
+test('Instanceof check returns false for nullish values', t => {
 	t.false(null instanceof Blob);
 });
