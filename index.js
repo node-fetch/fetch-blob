@@ -160,6 +160,7 @@ class Blob {
 
 	static [Symbol.hasInstance](object) {
 		return (
+			object &&
 			typeof object === 'object' &&
 			typeof object.stream === 'function' &&
 			object.stream.length === 0 &&
