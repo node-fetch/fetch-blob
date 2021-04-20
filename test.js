@@ -160,3 +160,19 @@ test('Reading after modified should fail', async t => {
 	const error = await blob.text().catch(error => error);
 	t.is(error.name, 'NotReadableError');
 });
+
+test('Blob-ish class is an instance of Blob', t => {
+	class File {
+		stream() { }
+
+		get [Symbol.toStringTag]() {
+			return 'File';
+		}
+	}
+
+	t.true(new File() instanceof Blob);
+});
+
+test('Instanceof check returns false for nullish values', t => {
+	t.false(null instanceof Blob);
+});
