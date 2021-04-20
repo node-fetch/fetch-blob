@@ -2,9 +2,6 @@ const {statSync, createReadStream} = require('fs');
 const Blob = require('./index.js');
 const DOMException = require('domexception');
 
-// eslint-disable-next-line unicorn/import-index
-const Blob = require('./index.js');
-
 /**
  * @param {string} path filepath on the disk
  * @returns {Blob}

@@ -41,6 +41,14 @@
         "xo": "^0.32.0"
     },
     "xo": {
+        "rules": {
+            "unicorn/import-index": "off",
+            "import/extensions": [
+                "error",
+                "always",
+                { "ignorePackages": true }
+            ]
+        },
         "overrides": [
             {
                 "files": "test.js",

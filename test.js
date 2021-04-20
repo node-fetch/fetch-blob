@@ -1,10 +1,10 @@
 const fs = require('fs');
 const test = require('ava');
-const Blob = require('.');
-const blobFrom = require('./from');
 const getStream = require('get-stream');
 const {Response} = require('node-fetch');
 const {TextDecoder} = require('util');
+const Blob = require('./index.js');
+const blobFrom = require('./from.js');
 
 test('new Blob()', t => {
 	const blob = new Blob(); // eslint-disable-line no-unused-vars
