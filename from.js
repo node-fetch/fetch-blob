@@ -1,6 +1,6 @@
-const {statSync, createReadStream} = require('fs');
-const Blob = require('./index.js');
-const DOMException = require('domexception');
+import {statSync, createReadStream} from 'fs';
+import DOMException from 'domexception';
+import Blob from './index.js';
 
 /**
  * @param {string} path filepath on the disk
@@ -54,4 +54,5 @@ class BlobDataItem {
 	}
 }
 
-module.exports = blobFrom;
+export default blobFrom;
+export {Blob};

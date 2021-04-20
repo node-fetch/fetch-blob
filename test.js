@@ -1,10 +1,10 @@
-const fs = require('fs');
-const test = require('ava');
-const getStream = require('get-stream');
-const {Response} = require('node-fetch');
-const {TextDecoder} = require('util');
-const Blob = require('./index.js');
-const blobFrom = require('./from.js');
+import fs from 'fs';
+import test from 'ava';
+import getStream from 'get-stream';
+import {Response} from 'node-fetch';
+import {Readable} from 'stream';
+import Blob from './index.js';
+import blobFrom from './from.js';
 
 test('new Blob()', t => {
 	const blob = new Blob(); // eslint-disable-line no-unused-vars
@@ -131,7 +131,7 @@ test('Blob works with node-fetch Response.blob()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
-	const response = new Response(blob);
+	const response = new Response(Readable.from(blob.stream()));
 	const blob2 = await response.blob();
 	t.is(await blob2.text(), data);
 });
@@ -140,7 +140,7 @@ test('Blob works with node-fetch Response.text()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
-	const response = new Response(blob);
+	const response = new Response(Readable.from(blob.stream()));
 	const text = await response.text();
 	t.is(text, data);
 });
@@ -177,4 +177,37 @@ test('Blob-ish class is an instance of Blob', t => {
 
 test('Instanceof check returns false for nullish values', t => {
 	t.false(null instanceof Blob);
+});
+
+test('Dose not lowercase the blob type', t => {
+	const type = 'multipart/form-data; boundary=----WebKitFormBoundaryTKqdrVt01qOBltBd'
+	t.is(new Blob([], {type}).type, type)
+});
+
+test('Parts are immutable', async t => {
+	const buf = new Uint8Array([97]);
+	const blob = new Blob([buf]);
+	buf[0] = 98;
+	t.is(await blob.text(), 'a');
+});
+
+test('Blobs are immutable', async t => {
+	const buf = new Uint8Array([97]);
+	const blob = new Blob([buf]);
+	const chunk = await blob.stream().next();
+	t.is(chunk.value[0], 97);
+	chunk.value[0] = 98;
+	t.is(await blob.text(), 'a');
+});
+
+// This was necessary to avoid large ArrayBuffer clones (slice)
+test('Large chunks are divided into smaller chunks', async t => {
+	const buf = new Uint8Array(65590);
+	const blob = new Blob([buf]);
+	let i = 0
+	for await (let chunk of blob.stream()) {
+		console.log(chunk)
+		i++
+	}
+	t.is(i === 2, true);
 });

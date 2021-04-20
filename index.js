@@ -1,58 +1,46 @@
-const {Readable} = require('stream');
-
-/**
- * @type {WeakMap<Blob, {type: string, size: number, parts: (Blob | Buffer)[] }>}
- */
-const wm = new WeakMap();
-
-async function * read(parts) {
-	for (const part of parts) {
-		if ('stream' in part) {
-			yield * part.stream();
-		} else {
-			yield part;
-		}
-	}
-}
+// 64 KiB (same size chrome slice theirs blob into Uint8array's)
+const POOL_SIZE = 65536;
 
 class Blob {
+
+	/** @type {Array.<(Blob|Uint8Array)>} */
+	#parts = [];
+	#type = '';
+	#size = 0;
+	#avoidClone = false
+
 	/**
 	 * The Blob() constructor returns a new Blob object. The content
 	 * of the blob consists of the concatenation of the values given
 	 * in the parameter array.
 	 *
-	 * @param {(ArrayBufferLike | ArrayBufferView | Blob | Buffer | string)[]} blobParts
+	 * @param {(ArrayBufferLike | ArrayBufferView | Blob | string)[]} blobParts
 	 * @param {{ type?: string }} [options]
 	 */
 	constructor(blobParts = [], options = {}) {
 		let size = 0;
 
 		const parts = blobParts.map(element => {
-			let buffer;
-			if (element instanceof Buffer) {
-				buffer = element;
-			} else if (ArrayBuffer.isView(element)) {
-				buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
+			let part;
+			if (ArrayBuffer.isView(element)) {
+				part = new Uint8Array(element.buffer.slice(element.byteOffset, element.byteOffset + element.byteLength));
 			} else if (element instanceof ArrayBuffer) {
-				buffer = Buffer.from(element);
+				part = new Uint8Array(element.slice(0));
 			} else if (element instanceof Blob) {
-				buffer = element;
+				part = element;
 			} else {
-				buffer = Buffer.from(typeof element === 'string' ? element : String(element));
+				part = new TextEncoder().encode(String(element));
 			}
 
-			// eslint-disable-next-line unicorn/explicit-length-check
-			size += buffer.length || buffer.size || 0;
-			return buffer;
+			size += ArrayBuffer.isView(part) ? part.byteLength : part.size;
+			return part;
 		});
 
-		const type = options.type === undefined ? '' : String(options.type).toLowerCase();
+		const type = options.type === undefined ? '' : String(options.type);
 
-		wm.set(this, {
-			type: /[^\u0020-\u007E]/.test(type) ? '' : type,
-			size,
-			parts
-		});
+		this.#type = /[^\u0020-\u007E]/.test(type) ? '' : type;
+		this.#size = size;
+		this.#parts = parts;
 	}
 
 	/**
@@ -60,14 +48,14 @@ class Blob {
 	 * size of the Blob in bytes.
 	 */
 	get size() {
-		return wm.get(this).size;
+		return this.#size;
 	}
 
 	/**
 	 * The type property of a Blob object returns the MIME type of the file.
 	 */
 	get type() {
-		return wm.get(this).type;
+		return this.#type;
 	}
 
 	/**
@@ -78,7 +66,17 @@ class Blob {
 	 * @return {Promise<string>}
 	 */
 	async text() {
-		return Buffer.from(await this.arrayBuffer()).toString();
+		this.#avoidClone = true
+		// More optimized than using this.arrayBuffer()
+		// that requires twice as much ram
+		const decoder = new TextDecoder();
+		let str = '';
+		for await (let part of this.stream()) {
+			str += decoder.decode(part, { stream: true });
+		}
+		// Remaining
+		str += decoder.decode();
+		return str;
 	}
 
 	/**
@@ -89,6 +87,7 @@ class Blob {
 	 * @return {Promise<ArrayBuffer>}
 	 */
 	async arrayBuffer() {
+		this.#avoidClone = true
 		const data = new Uint8Array(this.size);
 		let offset = 0;
 		for await (const chunk of this.stream()) {
@@ -100,13 +99,30 @@ class Blob {
 	}
 
 	/**
-	 * The Blob interface's stream() method is difference from native
-	 * and uses node streams instead of whatwg streams.
+	 * The Blob stream() implements partial support of the whatwg stream
+	 * by being only async iterable.
 	 *
-	 * @returns {Readable} Node readable stream
+	 * @returns {AsyncGenerator<Uint8Array>}
 	 */
-	stream() {
-		return Readable.from(read(wm.get(this).parts));
+	async * stream() {
+		for (let part of this.#parts) {
+			if ('stream' in part) {
+				yield * part.stream();
+			} else {
+				if (this.#avoidClone) {
+					yield part
+				} else {
+					let position = part.byteOffset;
+					let end = part.byteOffset + part.byteLength;
+					while (position !== end) {
+						const size = Math.min(end - position, POOL_SIZE);
+						const chunk = part.buffer.slice(position, position + size);
+						yield new Uint8Array(chunk);
+						position += chunk.byteLength;
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -125,7 +141,7 @@ class Blob {
 		let relativeEnd = end < 0 ? Math.max(size + end, 0) : Math.min(end, size);
 
 		const span = Math.max(relativeEnd - relativeStart, 0);
-		const parts = wm.get(this).parts.values();
+		const parts = this.#parts;
 		const blobParts = [];
 		let added = 0;
 
@@ -137,9 +153,15 @@ class Blob {
 				relativeStart -= size;
 				relativeEnd -= size;
 			} else {
-				const chunk = part.slice(relativeStart, Math.min(size, relativeEnd));
+				let chunk
+				if (ArrayBuffer.isView(part)) {
+					chunk = part.subarray(relativeStart, Math.min(size, relativeEnd));
+					added += chunk.byteLength
+				} else {
+					chunk = part.slice(relativeStart, Math.min(size, relativeEnd));
+					added += chunk.size
+				}
 				blobParts.push(chunk);
-				added += ArrayBuffer.isView(chunk) ? chunk.byteLength : chunk.size;
 				relativeStart = 0; // All next sequental parts should start at 0
 
 				// don't add the overflow to new blobParts
@@ -150,7 +172,8 @@ class Blob {
 		}
 
 		const blob = new Blob([], {type: String(type).toLowerCase()});
-		Object.assign(wm.get(blob), {size: span, parts: blobParts});
+		blob.#size = span;
+		blob.#parts = blobParts;
 
 		return blob;
 	}
@@ -177,4 +200,5 @@ Object.defineProperties(Blob.prototype, {
 	slice: {enumerable: true}
 });
 
-module.exports = Blob;
+export default Blob;
+export { Blob };

@@ -1,8 +1,9 @@
 {
     "name": "fetch-blob",
-    "version": "2.1.2",
+    "version": "3.0.0",
     "description": "A Blob implementation in Node.js, originally from node-fetch.",
     "main": "index.js",
+    "type": "module",
     "files": [
         "from.js",
         "index.js",
@@ -11,7 +12,7 @@
     ],
     "scripts": {
         "lint": "xo",
-        "test": "xo && ava",
+        "test": "ava",
         "report": "c8 --reporter json --reporter text ava",
         "coverage": "c8 --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
         "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js from.js"
@@ -22,7 +23,7 @@
         "node-fetch"
     ],
     "engines": {
-        "node": "^10.17.0 || >=12.3.0"
+        "node": ">=12.3.0"
     },
     "author": "David Frank",
     "license": "MIT",
