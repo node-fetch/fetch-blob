@@ -1,5 +1,5 @@
 const {statSync, createReadStream} = require('fs');
-const Blob = require('.');
+const Blob = require('./index');
 const DOMException = require('domexception');
 
 /**
