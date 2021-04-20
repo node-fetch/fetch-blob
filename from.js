@@ -1,7 +1,7 @@
 const {statSync, createReadStream} = require('fs');
 const DOMException = require('domexception');
 
-// slint-disable-next-line unicorn/import-index
+// eslint-disable-next-line unicorn/import-index
 const Blob = require('./index.js');
 
 /**
