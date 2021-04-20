@@ -1,6 +1,5 @@
 import fs from 'fs';
 import test from 'ava';
-import getStream from 'get-stream';
 import {Response} from 'node-fetch';
 import {Readable} from 'stream';
 import Blob from './index.js';
@@ -81,8 +80,10 @@ test('Blob stream()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
-	const result = await getStream(blob.stream());
-	t.is(result, data);
+
+	for await (let chunk of blob.stream()) {
+		t.is(chunk.join(), [97, 61, 49].join());
+	};
 });
 
 test('Blob toString()', t => {
