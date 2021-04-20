@@ -11,8 +11,8 @@
         "from.d.ts"
     ],
     "scripts": {
-        "lint": "xo",
-        "test": "ava",
+        "lint": "xo test.js from.js",
+        "test": "npm run lint && ava",
         "report": "c8 --reporter json --reporter text ava",
         "coverage": "c8 --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
         "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js from.js"

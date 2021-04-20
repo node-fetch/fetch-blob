@@ -81,9 +81,9 @@ test('Blob stream()', async t => {
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
 
-	for await (let chunk of blob.stream()) {
+	for await (const chunk of blob.stream()) {
 		t.is(chunk.join(), [97, 61, 49].join());
-	};
+	}
 });
 
 test('Blob toString()', t => {
@@ -181,8 +181,8 @@ test('Instanceof check returns false for nullish values', t => {
 });
 
 test('Dose not lowercase the blob type', t => {
-	const type = 'multipart/form-data; boundary=----WebKitFormBoundaryTKqdrVt01qOBltBd'
-	t.is(new Blob([], {type}).type, type)
+	const type = 'multipart/form-data; boundary=----WebKitFormBoundaryTKqdrVt01qOBltBd';
+	t.is(new Blob([], {type}).type, type);
 });
 
 test('Parts are immutable', async t => {
@@ -205,10 +205,11 @@ test('Blobs are immutable', async t => {
 test('Large chunks are divided into smaller chunks', async t => {
 	const buf = new Uint8Array(65590);
 	const blob = new Blob([buf]);
-	let i = 0
-	for await (let chunk of blob.stream()) {
-		console.log(chunk)
-		i++
+	let i = 0;
+	// eslint-disable-next-line no-unused-vars
+	for await (const chunk of blob.stream()) {
+		i++;
 	}
+
 	t.is(i === 2, true);
 });
