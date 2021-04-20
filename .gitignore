@@ -63,3 +63,4 @@ typings/
 .env
 
 index.d.ts
+from.d.ts
