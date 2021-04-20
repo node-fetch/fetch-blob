@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v2.1.1
+- Add nullish values checking in Symbol.hasInstance (#82)
+- Add generated typings for from.js file (#80)
+- Updated dev dependencies
+
 ## v2.1.0
 - Fix: .slice has an implementation bug (#54).
 - Added blob backed up by filesystem (#55)
