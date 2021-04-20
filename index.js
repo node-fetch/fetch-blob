@@ -24,7 +24,7 @@ class Blob {
 	 * @param {(ArrayBufferLike | ArrayBufferView | Blob | Buffer | string)[]} blobParts
 	 * @param {{ type?: string }} [options]
 	 */
-	constructor(blobParts = [], options = {type: ''}) {
+	constructor(blobParts = [], options = {}) {
 		let size = 0;
 
 		const parts = blobParts.map(element => {
@@ -41,6 +41,7 @@ class Blob {
 				buffer = Buffer.from(typeof element === 'string' ? element : String(element));
 			}
 
+			// eslint-disable-next-line unicorn/explicit-length-check
 			size += buffer.length || buffer.size || 0;
 			return buffer;
 		});

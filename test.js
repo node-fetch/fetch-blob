@@ -153,7 +153,9 @@ test('blob part backed up by filesystem', async t => {
 
 test('Reading after modified should fail', async t => {
 	const blob = blobFrom('./LICENSE');
-	await new Promise(resolve => setTimeout(resolve, 100));
+	await new Promise(resolve => {
+		setTimeout(resolve, 100);
+	});
 	const now = new Date();
 	// Change modified time
 	fs.utimesSync('./LICENSE', now, now);
@@ -163,7 +165,7 @@ test('Reading after modified should fail', async t => {
 
 test('Blob-ish class is an instance of Blob', t => {
 	class File {
-		stream() { }
+		stream() {}
 
 		get [Symbol.toStringTag]() {
 			return 'File';
