@@ -14,7 +14,7 @@ export default class Blob {
 	 * of the blob consists of the concatenation of the values given
 	 * in the parameter array.
 	 *
-	 * @param {(ArrayBufferLike | ArrayBufferView | Blob | string)[]} blobParts
+	 * @param {*} blobParts
 	 * @param {{ type?: string }} [options]
 	 */
 	constructor(blobParts = [], options = {}) {
