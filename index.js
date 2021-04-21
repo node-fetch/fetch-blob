@@ -1,7 +1,7 @@
 // 64 KiB (same size chrome slice theirs blob into Uint8array's)
 const POOL_SIZE = 65536;
 
-class Blob {
+export default class Blob {
 
 	/** @type {Array.<(Blob|Uint8Array)>} */
 	#parts = [];
@@ -201,5 +201,4 @@ Object.defineProperties(Blob.prototype, {
 	slice: {enumerable: true}
 });
 
-export default Blob;
 export { Blob };

@@ -213,3 +213,8 @@ test('Large chunks are divided into smaller chunks', async t => {
 
 	t.is(i === 2, true);
 });
+
+test('Can use named import - as well as default', async t => {
+	const {Blob, default: def} = await import('./index.js');
+	t.is(Blob, def);
+});
