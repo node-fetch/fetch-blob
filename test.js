@@ -180,6 +180,7 @@ test('Instanceof check returns false for nullish values', t => {
 	t.false(null instanceof Blob);
 });
 
+/** @see https://github.com/w3c/FileAPI/issues/43 - important to keep boundary value */
 test('Dose not lowercase the blob type', t => {
 	const type = 'multipart/form-data; boundary=----WebKitFormBoundaryTKqdrVt01qOBltBd';
 	t.is(new Blob([], {type}).type, type);
