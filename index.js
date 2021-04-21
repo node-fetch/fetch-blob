@@ -123,6 +123,7 @@ class Blob {
 				}
 			}
 		}
+		this.#avoidClone = false
 	}
 
 	/**
