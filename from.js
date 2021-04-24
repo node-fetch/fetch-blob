@@ -1,13 +1,28 @@
-const {statSync, createReadStream} = require('fs');
+const {statSync, createReadStream, promises: fs} = require('fs');
 const Blob = require('./index.js');
 const DOMException = require('domexception');
 
 /**
+ * Creates a Blob referencing to a file on disk. Synchronous version of blobFromPath
+ *
  * @param {string} path filepath on the disk
  * @returns {Blob}
  */
-function blobFrom(path) {
+function blobFromPathSync(path) {
 	const {size, mtime} = statSync(path);
+	const blob = new BlobDataItem({path, size, mtime});
+
+	return new Blob([blob]);
+}
+
+/**
+ * Creates a Blob referencing to a file on disk.
+ *
+ * @param {string} path
+ * @returns {Promise<Blob>}
+ */
+async function blobFromPath(path) {
+	const {size, mtime} = await fs.stat(path);
 	const blob = new BlobDataItem({path, size, mtime});
 
 	return new Blob([blob]);
@@ -38,12 +53,14 @@ class BlobDataItem {
 		});
 	}
 
-	stream() {
-		if (statSync(this.path).mtime > this.mtime) {
+	async* stream() {
+		const {mtime} = await fs.stat(this.path);
+
+		if (mtime > this.mtime) {
 			throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError');
 		}
 
-		return createReadStream(this.path, {
+		yield* createReadStream(this.path, {
 			start: this.start,
 			end: this.start + this.size - 1
 		});
@@ -54,4 +71,6 @@ class BlobDataItem {
 	}
 }
 
-module.exports = blobFrom;
+module.exports = blobFromPathSync;
+module.exports.blobFrom = blobFromPath;
+module.exports.blobFromPathSync = blobFromPathSync;

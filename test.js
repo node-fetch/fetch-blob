@@ -4,7 +4,7 @@ const getStream = require('get-stream');
 const {Response} = require('node-fetch');
 const {TextDecoder} = require('util');
 const Blob = require('./index.js');
-const blobFrom = require('./from.js');
+const {blobFromSync, blobFrom} = require('./from.js');
 
 test('new Blob()', t => {
 	const blob = new Blob(); // eslint-disable-line no-unused-vars
@@ -146,13 +146,13 @@ test('Blob works with node-fetch Response.text()', async t => {
 });
 
 test('blob part backed up by filesystem', async t => {
-	const blob = blobFrom('./LICENSE');
+	const blob = blobFromSync('./LICENSE');
 	t.is(await blob.slice(0, 3).text(), 'MIT');
 	t.is(await blob.slice(4, 11).text(), 'License');
 });
 
 test('Reading after modified should fail', async t => {
-	const blob = blobFrom('./LICENSE');
+	const blob = blobFromSync('./LICENSE');
 	await new Promise(resolve => {
 		setTimeout(resolve, 100);
 	});
@@ -162,6 +162,15 @@ test('Reading after modified should fail', async t => {
 	const error = await blob.text().catch(error => error);
 	t.is(error.name, 'NotReadableError');
 });
+
+test('Reading file using async version of blobFrom', async t => {
+	const blob = await blobFrom('./LICENSE');
+	const expected = await fs.promises.readFile('./LICENSE', 'utf-8');
+
+	const actual = await getStream(blob.stream())
+
+	t.is(actual, expected)
+})
 
 test('Blob-ish class is an instance of Blob', t => {
 	class File {
