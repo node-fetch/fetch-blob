@@ -72,5 +72,5 @@ class BlobDataItem {
 }
 
 module.exports = blobFromPathSync;
-module.exports.blobFrom = blobFromPath;
+module.exports.blobFromPath = blobFromPath;
 module.exports.blobFromPathSync = blobFromPathSync;
