@@ -34,7 +34,7 @@ class BlobDataItem {
 			path: this.path,
 			start,
 			mtime: this.mtime,
-			size: end - start
+			size: start ? end - start : end
 		});
 	}
 
@@ -45,7 +45,7 @@ class BlobDataItem {
 
 		return createReadStream(this.path, {
 			start: this.start,
-			end: this.start + this.size - 1
+			end: (this.start ? this.start + this.size : this.size) - 1
 		});
 	}
 
