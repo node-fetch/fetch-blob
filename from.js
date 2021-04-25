@@ -23,7 +23,7 @@ class BlobDataItem {
 	constructor(options) {
 		this.size = options.size;
 		this.path = options.path;
-		this.start = options.start;
+		this.start = options.start || 0;
 		this.mtime = options.mtime;
 	}
 
@@ -34,7 +34,7 @@ class BlobDataItem {
 			path: this.path,
 			start,
 			mtime: this.mtime,
-			size: start ? end - start : end
+			size: end - start
 		});
 	}
 
@@ -45,7 +45,7 @@ class BlobDataItem {
 
 		return createReadStream(this.path, {
 			start: this.start,
-			end: (this.start ? this.start + this.size : this.size) - 1
+			end: this.start + this.size - 1
 		});
 	}
 
