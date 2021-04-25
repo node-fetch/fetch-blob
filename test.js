@@ -5,6 +5,8 @@ import {Readable} from 'stream';
 import Blob from './index.js';
 import blobFrom from './from.js';
 
+const license = fs.readFileSync('./LICENSE', 'utf-8');
+
 test('new Blob()', t => {
 	const blob = new Blob(); // eslint-disable-line no-unused-vars
 	t.pass();
@@ -148,8 +150,8 @@ test('Blob works with node-fetch Response.text()', async t => {
 
 test('blob part backed up by filesystem', async t => {
 	const blob = blobFrom('./LICENSE');
-	t.is(await blob.slice(0, 3).text(), 'MIT');
-	t.is(await blob.slice(4, 11).text(), 'License');
+	t.is(await blob.slice(0, 3).text(), license.slice(0, 3));
+	t.is(await blob.slice(4, 11).text(), license.slice(4, 11));
 });
 
 test('Reading after modified should fail', async t => {
@@ -161,7 +163,20 @@ test('Reading after modified should fail', async t => {
 	// Change modified time
 	fs.utimesSync('./LICENSE', now, now);
 	const error = await blob.text().catch(error => error);
+	t.is(error instanceof Error, true);
 	t.is(error.name, 'NotReadableError');
+});
+
+test('Reading from the stream created by blobFrom', async t => {
+	const blob = blobFrom('./LICENSE');
+	const actual = await blob.text();
+	t.is(actual, license);
+});
+
+test('Reading empty blobs', async t => {
+	const blob = blobFrom('./LICENSE').slice(0, 0);
+	const actual = await blob.text();
+	t.is(actual, '');
 });
 
 test('Blob-ish class is an instance of Blob', t => {
