@@ -8,13 +8,13 @@ const {stat} = fs;
  * @param {string} path filepath on the disk
  * @returns {Blob}
  */
-const blobFrom = path => from(statSync(path), path);
+const blobFromSync = path => from(statSync(path), path);
 
 /**
  * @param {string} path filepath on the disk
  * @returns {Promise<Blob>}
  */
- const blobFromAsync = path => stat(path).then(stat => from(stat, path));
+ const blobFrom = path => stat(path).then(stat => from(stat, path));
 
 const from = (stat, path) => new Blob([new BlobDataItem({
 	path,
@@ -47,10 +47,10 @@ class BlobDataItem {
 	 */
 	slice(start, end) {
 		return new BlobDataItem({
-			path: this.path,
-			start,
-			mtime: this.mtime,
-			size: end - start
+			path: this.#path,
+			lastModified: this.lastModified,
+			size: end - start,
+			start
 		});
 	}
 
@@ -72,5 +72,5 @@ class BlobDataItem {
 	}
 }
 
-export default blobFrom;
-export {Blob, blobFrom, blobFromAsync};
+export default blobFromSync;
+export {Blob, blobFrom, blobFromSync};
