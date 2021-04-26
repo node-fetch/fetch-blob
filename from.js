@@ -29,7 +29,7 @@ const from = (stat, path) => new Blob([new BlobDataItem({
  *
  * @private
  */
-class BlobDataItem {
+export default class BlobDataItem {
 	#path;
 	#start;
 
@@ -71,5 +71,4 @@ class BlobDataItem {
 	}
 }
 
-export default blobFromSync;
 export {Blob, blobFrom, blobFromSync};
