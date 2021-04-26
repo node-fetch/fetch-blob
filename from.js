@@ -1,8 +1,7 @@
-import {statSync, createReadStream, promises as fs} from 'fs';
+import {statSync, createReadStream} from 'fs';
+import {stat} from 'fs/promises';
 import DOMException from 'domexception';
 import Blob from './index.js';
-
-const {stat} = fs;
 
 /**
  * @param {string} path filepath on the disk
@@ -19,7 +18,7 @@ const blobFromSync = path => from(statSync(path), path);
 const from = (stat, path) => new Blob([new BlobDataItem({
 	path,
 	size: stat.size,
-	lastModified: Number(stat.mtime),
+	lastModified: stat.mtimeMs,
 	start: 0
 })]);
 
@@ -55,8 +54,8 @@ class BlobDataItem {
 	}
 
 	async * stream() {
-		const metadata = await stat(this.#path)
-		if (metadata.mtime > this.lastModified) {
+		const {mtimeMs} = await stat(this.#path)
+		if (mtimeMs > this.lastModified) {
 			throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError');
 		}
 		if (this.size) {
