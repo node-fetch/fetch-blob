@@ -23,7 +23,7 @@ class BlobDataItem {
 	constructor(options) {
 		this.size = options.size;
 		this.path = options.path;
-		this.start = options.start;
+		this.start = options.start || 0;
 		this.mtime = options.mtime;
 	}
 
