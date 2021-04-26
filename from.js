@@ -43,6 +43,10 @@ class BlobDataItem {
 			throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError');
 		}
 
+		if (!this.size) {
+			return new Blob().stream();
+		}
+
 		return createReadStream(this.path, {
 			start: this.start,
 			end: this.start + this.size - 1
