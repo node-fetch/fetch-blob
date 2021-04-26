@@ -7,7 +7,7 @@ import Blob from './index.js';
  * @param {string} path filepath on the disk
  * @returns {Blob}
  */
-const blobFromSync = path => from(statSync(path), path);
+ const blobFromSync = path => from(statSync(path), path);
 
 /**
  * @param {string} path filepath on the disk
@@ -29,7 +29,7 @@ const from = (stat, path) => new Blob([new BlobDataItem({
  *
  * @private
  */
-export default class BlobDataItem {
+class BlobDataItem {
 	#path;
 	#start;
 
@@ -71,4 +71,5 @@ export default class BlobDataItem {
 	}
 }
 
+export default blobFromSync;
 export {Blob, blobFrom, blobFromSync};
