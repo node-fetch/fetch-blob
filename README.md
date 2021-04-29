@@ -35,14 +35,33 @@ npm install fetch-blob domexception
 ```
 
 ```js
-const blobFrom = require('fetch-blob/from.js');
-const blob1 = blobFrom('./2-GiB-file.bin');
-const blob2 = blobFrom('./2-GiB-file.bin');
+const blobFromSync = require('fetch-blob/from.js');
+const blob1 = blobFromSync('./2-GiB-file.bin');
+const blob2 = blobFromSync('./2-GiB-file.bin');
 
 // Not a 4 GiB memory snapshot, just holds 3 references
 // points to where data is located on the disk
 const blob = new Blob([blob1, blob2]);
 console.log(blob.size) // 4 GiB
+```
+
+blobFrom has both asynchronous and synchronous versions:
+
+```js
+const {blobFrom, blobFromSync} = require("fetch-blob/from.js");
+
+const blob1 = blobFromSync('./2-GiB-file.bin');
+const blob2 = blobFromSync('./2-GiB-file.bin');
+
+const blob = new Blob([blob1, blob2]);
+
+// or if you want and async version
+(async function() {
+    const blob1 = await blobFrom('./2-GiB-file.bin');
+    const blob2 = await blobFrom('./2-GiB-file.bin');
+
+    const blob = new Blob([blob1, blob2]);
+}())
 ```
 
 See the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/Blob) and [tests](https://github.com/node-fetch/fetch-blob/blob/master/test.js) for more details.
