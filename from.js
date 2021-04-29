@@ -3,12 +3,12 @@ const Blob = require('./index.js');
 const DOMException = require('domexception');
 
 /**
- * Creates a Blob referencing to a file on disk. Synchronous version of blobFromPath
+ * Creates a Blob referencing to a file on disk. Synchronous version of blobFrom
  *
  * @param {string} path filepath on the disk
  * @returns {Blob}
  */
-function blobFromPathSync(path) {
+function blobFromSync(path) {
 	const {size, mtime} = statSync(path);
 	const blob = new BlobDataItem({path, size, mtime});
 
@@ -21,7 +21,7 @@ function blobFromPathSync(path) {
  * @param {string} path
  * @returns {Promise<Blob>}
  */
-async function blobFromPath(path) {
+async function blobFrom(path) {
 	const {size, mtime} = await fs.stat(path);
 	const blob = new BlobDataItem({path, size, mtime});
 
@@ -38,7 +38,7 @@ class BlobDataItem {
 	constructor(options) {
 		this.size = options.size;
 		this.path = options.path;
-		this.start = options.start;
+		this.start = options.start || 0;
 		this.mtime = options.mtime;
 	}
 
@@ -60,10 +60,9 @@ class BlobDataItem {
 			throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError');
 		}
 
-		yield* createReadStream(this.path, {
-			start: this.start,
-			end: this.start + this.size - 1
-		});
+		yield* this.size
+			? createReadStream(this.path, {start: this.start, end: this.start + this.size - 1})
+			: new Blob().stream();
 	}
 
 	get [Symbol.toStringTag]() {
@@ -71,6 +70,6 @@ class BlobDataItem {
 	}
 }
 
-module.exports = blobFromPathSync;
-module.exports.blobFromPath = blobFromPath;
-module.exports.blobFromPathSync = blobFromPathSync;
+module.exports = blobFromSync;
+module.exports.blobFrom = blobFrom;
+module.exports.blobFromSync = blobFromSync;

@@ -163,14 +163,20 @@ test('Reading after modified should fail', async t => {
 	t.is(error.name, 'NotReadableError');
 });
 
-test('Reading file using async version of blobFrom', async t => {
+test('Reading from the stream created by blobFrom', async t => {
 	const blob = await blobFrom('./LICENSE');
 	const expected = await fs.promises.readFile('./LICENSE', 'utf-8');
 
-	const actual = await getStream(blob.stream())
+	const actual = await getStream(blob.stream());
 
-	t.is(actual, expected)
-})
+	t.is(actual, expected);
+});
+
+test('Reading empty blobs', async t => {
+	const blob = blobFromSync('./LICENSE').slice(0, 0);
+	const actual = await blob.text();
+	t.is(actual, '');
+});
 
 test('Blob-ish class is an instance of Blob', t => {
 	class File {
