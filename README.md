@@ -55,7 +55,7 @@ const blob2 = blobFromSync('./2-GiB-file.bin');
 
 const blob = new Blob([blob1, blob2]);
 
-// or if you want and async version
+// or if you want an async version
 (async function() {
     const blob1 = await blobFrom('./2-GiB-file.bin');
     const blob2 = await blobFrom('./2-GiB-file.bin');
