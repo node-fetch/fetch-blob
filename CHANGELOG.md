@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## next
+- Fixed a bug where in BlobDataItem when the file was empty (#86)
+
+## v2.1.2
+- Fixed a bug where `start` in BlobDataItem was undefined (#85)
+
 ## v2.1.1
 - Add nullish values checking in Symbol.hasInstance (#82)
 - Add generated typings for from.js file (#80)
