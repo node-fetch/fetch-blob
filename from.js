@@ -53,16 +53,16 @@ class BlobDataItem {
 		});
 	}
 
-	async* stream() {
+	async * stream() {
 		const {mtime} = await fs.stat(this.path);
 
 		if (mtime > this.mtime) {
 			throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError');
 		}
 
-		yield* this.size
-			? createReadStream(this.path, {start: this.start, end: this.start + this.size - 1})
-			: new Blob().stream();
+		yield* this.size ?
+			createReadStream(this.path, {start: this.start, end: this.start + this.size - 1}) :
+			new Blob().stream();
 	}
 
 	get [Symbol.toStringTag]() {
