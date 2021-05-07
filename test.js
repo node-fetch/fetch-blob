@@ -187,6 +187,12 @@ test('Reading empty blobs', async t => {
 	t.is(actual, '');
 });
 
+test('Reading empty blobs', async t => {
+	const blob = blobFrom('./LICENSE').slice(0, 0);
+	const actual = await blob.text();
+	t.is(actual, '');
+});
+
 test('Blob-ish class is an instance of Blob', t => {
 	class File {
 		stream() {}

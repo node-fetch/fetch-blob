@@ -14,6 +14,9 @@ Changelog
 - index.js can now be imported by browser & deno since it no longer depends on any
   core node features (but why would you? other environment can benefit from it)
 
+## v2.1.2
+- Fixed a bug where `start` in BlobDataItem was undefined (#85)
+
 ## v2.1.1
 - Add nullish values checking in Symbol.hasInstance (#82)
 - Add generated typings for from.js file (#80)
