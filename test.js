@@ -2,8 +2,9 @@ import fs from 'fs';
 import test from 'ava';
 import {Response} from 'node-fetch';
 import {Readable} from 'stream';
+import buffer from 'buffer';
 import Blob from './index.js';
-import blobFrom from './from.js';
+import sync, {blobFromSync, blobFrom} from './from.js';
 
 const license = fs.readFileSync('./LICENSE', 'utf-8');
 
@@ -26,11 +27,12 @@ test('Blob ctor parts', async t => {
 		new Uint8Array([101]).buffer,
 		Buffer.from('f'),
 		new Blob(['g']),
-		{}
+		{},
+		new URLSearchParams('foo')
 	];
 
 	const blob = new Blob(parts);
-	t.is(await blob.text(), 'abcdefg[object Object]');
+	t.is(await blob.text(), 'abcdefg[object Object]foo=');
 });
 
 test('Blob size', t => {
@@ -149,13 +151,13 @@ test('Blob works with node-fetch Response.text()', async t => {
 });
 
 test('blob part backed up by filesystem', async t => {
-	const blob = blobFrom('./LICENSE');
+	const blob = blobFromSync('./LICENSE');
 	t.is(await blob.slice(0, 3).text(), license.slice(0, 3));
 	t.is(await blob.slice(4, 11).text(), license.slice(4, 11));
 });
 
 test('Reading after modified should fail', async t => {
-	const blob = blobFrom('./LICENSE');
+	const blob = blobFromSync('./LICENSE');
 	await new Promise(resolve => {
 		setTimeout(resolve, 100);
 	});
@@ -168,13 +170,19 @@ test('Reading after modified should fail', async t => {
 });
 
 test('Reading from the stream created by blobFrom', async t => {
-	const blob = blobFrom('./LICENSE');
+	const blob = blobFromSync('./LICENSE');
+	const actual = await blob.text();
+	t.is(actual, license);
+});
+
+test('create a blob from path asynchronous', async t => {
+	const blob = await blobFrom('./LICENSE');
 	const actual = await blob.text();
 	t.is(actual, license);
 });
 
 test('Reading empty blobs', async t => {
-	const blob = blobFrom('./LICENSE').slice(0, 0);
+	const blob = blobFromSync('./LICENSE').slice(0, 0);
 	const actual = await blob.text();
 	t.is(actual, '');
 });
@@ -196,7 +204,7 @@ test('Instanceof check returns false for nullish values', t => {
 });
 
 /** @see https://github.com/w3c/FileAPI/issues/43 - important to keep boundary value */
-test('Dose not lowercase the blob type', t => {
+test('Dose not lowercase the blob values', t => {
 	const type = 'multipart/form-data; boundary=----WebKitFormBoundaryTKqdrVt01qOBltBd';
 	t.is(new Blob([], {type}).type, type);
 });
@@ -234,3 +242,15 @@ test('Can use named import - as well as default', async t => {
 	const {Blob, default: def} = await import('./index.js');
 	t.is(Blob, def);
 });
+
+test('default from.js exports blobFromSync', t => {
+	t.is(blobFromSync, sync);
+});
+
+if (buffer.Blob) {
+	test('Can wrap buffer.Blob to a fetch-blob', async t => {
+		const blob1 = new buffer.Blob(['blob part']);
+		const blob2 = new Blob([blob1]);
+		t.is(await blob2.text(), 'blob part');
+	});
+}

@@ -1,13 +1,43 @@
 // 64 KiB (same size chrome slice theirs blob into Uint8array's)
 const POOL_SIZE = 65536;
 
+/** @param {(Blob | Uint8Array)[]} parts */
+async function * toIterator (parts, clone = true) {
+	for (let part of parts) {
+		if ('stream' in part) {
+			yield * part.stream();
+		} else if (ArrayBuffer.isView(part)) {
+			if (clone) {
+				let position = part.byteOffset;
+				let end = part.byteOffset + part.byteLength;
+				while (position !== end) {
+					const size = Math.min(end - position, POOL_SIZE);
+					const chunk = part.buffer.slice(position, position + size);
+					yield new Uint8Array(chunk);
+					position += chunk.byteLength;
+				}
+			} else {
+				yield part;
+			}
+		} else {
+			// For blobs that have arrayBuffer but no stream method (nodes buffer.Blob)
+			let position = 0;
+			while (position !== part.size) {
+				const chunk = part.slice(position, Math.min(part.size, position + POOL_SIZE));
+				const buffer = await chunk.arrayBuffer();
+				position += buffer.byteLength;
+				yield new Uint8Array(buffer);
+			}
+		}
+	}
+}
+
 export default class Blob {
 
 	/** @type {Array.<(Blob|Uint8Array)>} */
 	#parts = [];
 	#type = '';
 	#size = 0;
-	#avoidClone = false
 
 	/**
 	 * The Blob() constructor returns a new Blob object. The content
@@ -66,12 +96,11 @@ export default class Blob {
 	 * @return {Promise<string>}
 	 */
 	async text() {
-		this.#avoidClone = true
 		// More optimized than using this.arrayBuffer()
 		// that requires twice as much ram
 		const decoder = new TextDecoder();
 		let str = '';
-		for await (let part of this.stream()) {
+		for await (let part of toIterator(this.#parts, false)) {
 			str += decoder.decode(part, { stream: true });
 		}
 		// Remaining
@@ -87,10 +116,9 @@ export default class Blob {
 	 * @return {Promise<ArrayBuffer>}
 	 */
 	async arrayBuffer() {
-		this.#avoidClone = true
 		const data = new Uint8Array(this.size);
 		let offset = 0;
-		for await (const chunk of this.stream()) {
+		for await (const chunk of toIterator(this.#parts, false)) {
 			data.set(chunk, offset);
 			offset += chunk.length;
 		}
@@ -100,30 +128,12 @@ export default class Blob {
 
 	/**
 	 * The Blob stream() implements partial support of the whatwg stream
-	 * by being only async iterable.
+	 * by only being async iterable.
 	 *
 	 * @returns {AsyncGenerator<Uint8Array>}
 	 */
 	async * stream() {
-		for (let part of this.#parts) {
-			if ('stream' in part) {
-				yield * part.stream();
-			} else {
-				if (this.#avoidClone) {
-					yield part
-				} else {
-					let position = part.byteOffset;
-					let end = part.byteOffset + part.byteLength;
-					while (position !== end) {
-						const size = Math.min(end - position, POOL_SIZE);
-						const chunk = part.buffer.slice(position, position + size);
-						yield new Uint8Array(chunk);
-						position += chunk.byteLength;
-					}
-				}
-			}
-		}
-		this.#avoidClone = false
+		yield * toIterator(this.#parts, true);
 	}
 
 	/**
@@ -187,9 +197,11 @@ export default class Blob {
 		return (
 			object &&
 			typeof object === 'object' &&
-			typeof object.stream === 'function' &&
-			object.stream.length === 0 &&
 			typeof object.constructor === 'function' &&
+			(
+				typeof object.stream === 'function' ||
+				typeof object.arrayBuffer === 'function'
+			) &&
 			/^(Blob|File)$/.test(object[Symbol.toStringTag])
 		);
 	}
