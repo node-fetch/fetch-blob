@@ -1,10 +1,12 @@
-const fs = require('fs');
-const test = require('ava');
-const getStream = require('get-stream');
-const {Response} = require('node-fetch');
-const {TextDecoder} = require('util');
-const Blob = require('./index.js');
-const blobFrom = require('./from.js');
+import fs from 'fs';
+import test from 'ava';
+import {Response} from 'node-fetch';
+import {Readable} from 'stream';
+import buffer from 'buffer';
+import Blob from './index.js';
+import syncBlob, {blobFromSync, blobFrom} from './from.js';
+
+const license = fs.readFileSync('./LICENSE', 'utf-8');
 
 test('new Blob()', t => {
 	const blob = new Blob(); // eslint-disable-line no-unused-vars
@@ -25,11 +27,12 @@ test('Blob ctor parts', async t => {
 		new Uint8Array([101]).buffer,
 		Buffer.from('f'),
 		new Blob(['g']),
-		{}
+		{},
+		new URLSearchParams('foo')
 	];
 
 	const blob = new Blob(parts);
-	t.is(await blob.text(), 'abcdefg[object Object]');
+	t.is(await blob.text(), 'abcdefg[object Object]foo=');
 });
 
 test('Blob size', t => {
@@ -81,8 +84,10 @@ test('Blob stream()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
-	const result = await getStream(blob.stream());
-	t.is(result, data);
+
+	for await (const chunk of blob.stream()) {
+		t.is(chunk.join(), [97, 61, 49].join());
+	}
 });
 
 test('Blob toString()', t => {
@@ -131,7 +136,7 @@ test('Blob works with node-fetch Response.blob()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
-	const response = new Response(blob);
+	const response = new Response(Readable.from(blob.stream()));
 	const blob2 = await response.blob();
 	t.is(await blob2.text(), data);
 });
@@ -140,19 +145,19 @@ test('Blob works with node-fetch Response.text()', async t => {
 	const data = 'a=1';
 	const type = 'text/plain';
 	const blob = new Blob([data], {type});
-	const response = new Response(blob);
+	const response = new Response(Readable.from(blob.stream()));
 	const text = await response.text();
 	t.is(text, data);
 });
 
 test('blob part backed up by filesystem', async t => {
-	const blob = blobFrom('./LICENSE');
-	t.is(await blob.slice(0, 3).text(), 'MIT');
-	t.is(await blob.slice(4, 11).text(), 'License');
+	const blob = blobFromSync('./LICENSE');
+	t.is(await blob.slice(0, 3).text(), license.slice(0, 3));
+	t.is(await blob.slice(4, 11).text(), license.slice(4, 11));
 });
 
 test('Reading after modified should fail', async t => {
-	const blob = blobFrom('./LICENSE');
+	const blob = blobFromSync('./LICENSE');
 	await new Promise(resolve => {
 		setTimeout(resolve, 100);
 	});
@@ -160,20 +165,24 @@ test('Reading after modified should fail', async t => {
 	// Change modified time
 	fs.utimesSync('./LICENSE', now, now);
 	const error = await blob.text().catch(error => error);
+	t.is(error instanceof Error, true);
 	t.is(error.name, 'NotReadableError');
 });
 
 test('Reading from the stream created by blobFrom', async t => {
-	const blob = blobFrom('./LICENSE');
-	const expected = await fs.promises.readFile('./LICENSE', 'utf-8');
+	const blob = blobFromSync('./LICENSE');
+	const actual = await blob.text();
+	t.is(actual, license);
+});
 
-	const actual = await getStream(blob.stream());
-
-	t.is(actual, expected);
+test('create a blob from path asynchronous', async t => {
+	const blob = await blobFrom('./LICENSE');
+	const actual = await blob.text();
+	t.is(actual, license);
 });
 
 test('Reading empty blobs', async t => {
-	const blob = blobFrom('./LICENSE').slice(0, 0);
+	const blob = blobFromSync('./LICENSE').slice(0, 0);
 	const actual = await blob.text();
 	t.is(actual, '');
 });
@@ -193,3 +202,55 @@ test('Blob-ish class is an instance of Blob', t => {
 test('Instanceof check returns false for nullish values', t => {
 	t.false(null instanceof Blob);
 });
+
+/** @see https://github.com/w3c/FileAPI/issues/43 - important to keep boundary value */
+test('Dose not lowercase the blob values', t => {
+	const type = 'multipart/form-data; boundary=----WebKitFormBoundaryTKqdrVt01qOBltBd';
+	t.is(new Blob([], {type}).type, type);
+});
+
+test('Parts are immutable', async t => {
+	const buf = new Uint8Array([97]);
+	const blob = new Blob([buf]);
+	buf[0] = 98;
+	t.is(await blob.text(), 'a');
+});
+
+test('Blobs are immutable', async t => {
+	const buf = new Uint8Array([97]);
+	const blob = new Blob([buf]);
+	const chunk = await blob.stream().next();
+	t.is(chunk.value[0], 97);
+	chunk.value[0] = 98;
+	t.is(await blob.text(), 'a');
+});
+
+// This was necessary to avoid large ArrayBuffer clones (slice)
+test('Large chunks are divided into smaller chunks', async t => {
+	const buf = new Uint8Array(65590);
+	const blob = new Blob([buf]);
+	let i = 0;
+	// eslint-disable-next-line no-unused-vars
+	for await (const chunk of blob.stream()) {
+		i++;
+	}
+
+	t.is(i === 2, true);
+});
+
+test('Can use named import - as well as default', async t => {
+	const {Blob, default: def} = await import('./index.js');
+	t.is(Blob, def);
+});
+
+test('default from.js exports blobFromSync', t => {
+	t.is(blobFromSync, syncBlob);
+});
+
+if (buffer.Blob) {
+	test('Can wrap buffer.Blob to a fetch-blob', async t => {
+		const blob1 = new buffer.Blob(['blob part']);
+		const blob2 = new Blob([blob1]);
+		t.is(await blob2.text(), 'blob part');
+	});
+}

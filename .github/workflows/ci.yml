@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        node: ["15", "14", "12", engines]
+        node: ["16", "15", "14", engines]
         exclude:
           # On Windows, run tests with only the LTS environments.
           - os: windows-latest

@@ -1,8 +1,18 @@
 Changelog
 =========
 
-## next
-- Fixed a bug where in BlobDataItem when the file was empty (#86)
+## v3.0.0
+- Changed WeakMap for private field (require node 12)
+- Switch to ESM
+- blob.stream() return a subset of whatwg stream which is the async iterable
+  (it no longer return a node stream)
+- Reduced the dependency of Buffer by changing to global TextEncoder/Decoder (require node 11)
+- Disabled xo since it could understand private fields (#)
+- No longer transform the type to lowercase (https://github.com/w3c/FileAPI/issues/43)
+  This is more loose than strict, keys should be lowercased, but values should not.
+  It would require a more proper mime type parser - so we just made it loose.
+- index.js can now be imported by browser & deno since it no longer depends on any
+  core node features (but why would you? other environment can benefit from it)
 
 ## v2.1.2
 - Fixed a bug where `start` in BlobDataItem was undefined (#85)
