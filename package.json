@@ -23,7 +23,7 @@
         "node-fetch"
     ],
     "engines": {
-        "node": ">=12.3.0"
+        "node": ">=14.0.0"
     },
     "author": "David Frank",
     "license": "MIT",
