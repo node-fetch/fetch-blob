@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## v3.0.0
+## v3.0.0-rc.0
 - Changed WeakMap for private field (require node 12)
 - Switch to ESM
 - blob.stream() return a subset of whatwg stream which is the async iterable
