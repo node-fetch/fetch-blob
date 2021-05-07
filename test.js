@@ -4,7 +4,7 @@ import {Response} from 'node-fetch';
 import {Readable} from 'stream';
 import buffer from 'buffer';
 import Blob from './index.js';
-import sync, {blobFromSync, blobFrom} from './from.js';
+import syncBlob, {blobFromSync, blobFrom} from './from.js';
 
 const license = fs.readFileSync('./LICENSE', 'utf-8');
 
@@ -187,12 +187,6 @@ test('Reading empty blobs', async t => {
 	t.is(actual, '');
 });
 
-test('Reading empty blobs', async t => {
-	const blob = blobFrom('./LICENSE').slice(0, 0);
-	const actual = await blob.text();
-	t.is(actual, '');
-});
-
 test('Blob-ish class is an instance of Blob', t => {
 	class File {
 		stream() {}
@@ -250,7 +244,7 @@ test('Can use named import - as well as default', async t => {
 });
 
 test('default from.js exports blobFromSync', t => {
-	t.is(blobFromSync, sync);
+	t.is(blobFromSync, syncBlob);
 });
 
 if (buffer.Blob) {
