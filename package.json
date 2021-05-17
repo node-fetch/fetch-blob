@@ -64,6 +64,6 @@
         "domexception": "^2.0.1",
         "node-fetch": "^3.0.0-beta.9",
         "typescript": "^4.2.4",
-        "xo": "^0.38.2"
+        "xo": "^0.40.1"
     }
 }
