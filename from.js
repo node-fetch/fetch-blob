@@ -1,7 +1,7 @@
 import {statSync, createReadStream} from 'fs';
 import {stat} from 'fs/promises';
 import {basename} from 'path';
-import File from './File.js';
+import File from './file.js';
 import Blob from './index.js';
 import {MessageChannel} from 'worker_threads';
 
@@ -16,13 +16,13 @@ const DOMException = globalThis.DOMException || (() => {
  * @param {string} path filepath on the disk
  * @param {string} [type] mimetype to use
  */
-const blobFromSync = (path, type) => from(statSync(path), path, type);
+const blobFromSync = (path, type) => fromBlob(statSync(path), path, type);
 
 /**
  * @param {string} path filepath on the disk
  * @param {string} [type] mimetype to use
  */
-const blobFrom = (path, type) => stat(path).then(stat => from(stat, path, type));
+const blobFrom = (path, type) => stat(path).then(stat => fromBlob(stat, path, type));
 
 /**
  * @param {string} path filepath on the disk
@@ -36,7 +36,7 @@ const fileFrom = (path, type) => stat(path).then(stat => fromFile(stat, path, ty
  */
 const fileFromSync = (path, type) => fromFile(statSync(path), path, type);
 
-const from = (stat, path, type = '') => new Blob([new BlobDataItem({
+const fromBlob = (stat, path, type = '') => new Blob([new BlobDataItem({
 	path,
 	size: stat.size,
 	lastModified: stat.mtimeMs,
