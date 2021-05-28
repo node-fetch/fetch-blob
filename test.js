@@ -297,6 +297,15 @@ test('fileFrom(path, type) sets the type', async t => {
 	t.is(file.type, 'text/plain');
 });
 
+test('fileFrom(path, type) read/sets the lastModified ', async t => {
+	const file = await fileFrom('./LICENSE', 'text/plain');
+	// Earlier test updates the last modified date to now
+	t.is(typeof file.lastModified, 'number');
+	// The lastModifiedDate is deprecated and removed from spec
+	t.is('lastModifiedDate' in file, false);
+	t.is(file.lastModified > Date.now() - 60000, true);
+});
+
 test('blobFrom(path, type) sets the type', async t => {
 	const blob = await blobFrom('./LICENSE', 'text/plain');
 	t.is(blob.type, 'text/plain');
@@ -305,4 +314,12 @@ test('blobFrom(path, type) sets the type', async t => {
 test('blobFrom(path) sets empty type', async t => {
 	const blob = await blobFrom('./LICENSE');
 	t.is(blob.type, '');
+});
+
+test('new File() throws with too few args', t => {
+	try {
+		const file = new File(); // eslint-disable-line no-unused-vars
+	} catch (error) {
+		t.is(error.constructor.name, 'TypeError');
+	}
 });
