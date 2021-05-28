@@ -319,6 +319,6 @@ test('blobFrom(path) sets empty type', async t => {
 test('new File() throws with too few args', t => {
 	t.throws(() => new File(), {
 		instanceOf: TypeError,
-		message: 'Failed to construct \'File\': 2 arguments required.'
+		message: 'Failed to construct \'File\': 2 arguments required, but only 0 present.'
 	});
 });

@@ -11,7 +11,7 @@ export default class File extends Blob {
    */ // @ts-ignore
   constructor(fileBits, fileName, options = {}) {
     if (arguments.length < 2) {
-      throw new TypeError(`Failed to construct 'File': 2 arguments required.`);
+      throw new TypeError(`Failed to construct 'File': 2 arguments required, but only ${arguments.length} present.`);
     }
     super(fileBits, options);
 
