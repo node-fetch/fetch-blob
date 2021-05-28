@@ -1,10 +1,11 @@
 import fs from 'fs';
-import test from 'ava';
-import {Response} from 'node-fetch';
 import {Readable} from 'stream';
 import buffer from 'buffer';
+import test from 'ava';
+import {Response} from 'node-fetch';
+import syncBlob, {blobFromSync, blobFrom, fileFromSync, fileFrom} from './from.js';
+import File from './file.js';
 import Blob from './index.js';
-import syncBlob, {blobFromSync, blobFrom} from './from.js';
 
 const license = fs.readFileSync('./LICENSE', 'utf-8');
 
@@ -165,6 +166,21 @@ test('Reading after modified should fail', async t => {
 	// Change modified time
 	fs.utimesSync('./LICENSE', now, now);
 	const error = await blob.text().catch(error => error);
+	t.is(error.constructor.name, 'DOMException');
+	t.is(error instanceof Error, true);
+	t.is(error.name, 'NotReadableError');
+});
+
+test('Reading file after modified should fail', async t => {
+	const file = fileFromSync('./LICENSE');
+	await new Promise(resolve => {
+		setTimeout(resolve, 100);
+	});
+	const now = new Date();
+	// Change modified time
+	fs.utimesSync('./LICENSE', now, now);
+	const error = await file.text().catch(error => error);
+	t.is(error.constructor.name, 'DOMException');
 	t.is(error instanceof Error, true);
 	t.is(error.name, 'NotReadableError');
 });
@@ -239,6 +255,7 @@ test('Large chunks are divided into smaller chunks', async t => {
 });
 
 test('Can use named import - as well as default', async t => {
+	// eslint-disable-next-line node/no-unsupported-features/es-syntax
 	const {Blob, default: def} = await import('./index.js');
 	t.is(Blob, def);
 });
@@ -254,3 +271,38 @@ if (buffer.Blob) {
 		t.is(await blob2.text(), 'blob part');
 	});
 }
+
+test('File is a instance of blob', t => {
+	t.is(new File([], '') instanceof Blob, true);
+});
+
+test('fileFrom returns the name', async t => {
+	t.is((await fileFrom('./LICENSE')).name, 'LICENSE');
+});
+
+test('fileFromSync returns the name', t => {
+	t.is(fileFromSync('./LICENSE').name, 'LICENSE');
+});
+
+test('fileFromSync(path, type) sets the type', t => {
+	t.is(fileFromSync('./LICENSE', 'text/plain').type, 'text/plain');
+});
+
+test('blobFromSync(path, type) sets the type', t => {
+	t.is(blobFromSync('./LICENSE', 'text/plain').type, 'text/plain');
+});
+
+test('fileFrom(path, type) sets the type', async t => {
+	const file = await fileFrom('./LICENSE', 'text/plain');
+	t.is(file.type, 'text/plain');
+});
+
+test('blobFrom(path, type) sets the type', async t => {
+	const blob = await blobFrom('./LICENSE', 'text/plain');
+	t.is(blob.type, 'text/plain');
+});
+
+test('blobFrom(path) sets empty type', async t => {
+	const blob = await blobFrom('./LICENSE');
+	t.is(blob.type, '');
+});

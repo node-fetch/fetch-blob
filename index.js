@@ -173,7 +173,7 @@ export default class Blob {
 					added += chunk.size
 				}
 				blobParts.push(chunk);
-				relativeStart = 0; // All next sequental parts should start at 0
+				relativeStart = 0; // All next sequential parts should start at 0
 
 				// don't add the overflow to new blobParts
 				if (added >= span) {
@@ -195,9 +195,7 @@ export default class Blob {
 
 	static [Symbol.hasInstance](object) {
 		return (
-			object &&
-			typeof object === 'object' &&
-			typeof object.constructor === 'function' &&
+			typeof object?.constructor === 'function' &&
 			(
 				typeof object.stream === 'function' ||
 				typeof object.arrayBuffer === 'function'

@@ -86,7 +86,11 @@ npm install fetch-blob
 // Ways to import
 // (PS it's dependency free ESM package so regular http-import from CDN works too)
 import Blob from 'fetch-blob'
+import File from 'fetch-blob/file.js'
+
 import {Blob} from 'fetch-blob'
+import {File} from 'fetch-blob/file.js'
+
 const {Blob} = await import('fetch-blob')
 
 
@@ -105,27 +109,33 @@ globalThis.ReadableStream.from(blob.stream())
 ```
 
 ### Blob part backed up by filesystem
-To use, install [domexception](https://github.com/jsdom/domexception).
 
-```sh
-npm install fetch-blob domexception
-```
+`fetch-blob/from.js` comes packed with tools to convert any filepath into either a Blob or a File
+It will not read the content into memory. It will only stat the file for last modified date and file size.
 
 ```js
-// The default export is sync and use fs.stat to retrieve size & last modified
+// The default export is sync and use fs.stat to retrieve size & last modified as a blob
 import blobFromSync from 'fetch-blob/from.js'
-import {Blob, blobFrom, blobFromSync} from 'fetch-blob/from.js'
+import {File, Blob, blobFrom, blobFromSync, fileFrom, fileFromSync} from 'fetch-blob/from.js'
 
-const fsBlob1 = blobFromSync('./2-GiB-file.bin')
-const fsBlob2 = await blobFrom('./2-GiB-file.bin')
+const fsFile = fileFromSync('./2-GiB-file.bin', 'application/octet-stream')
+const fsBlob = await blobFrom('./2-GiB-file.mp4')
 
-// Not a 4 GiB memory snapshot, just holds 3 references
+// Not a 4 GiB memory snapshot, just holds references
 // points to where data is located on the disk
-const blob = new Blob([fsBlob1, fsBlob2, 'memory'])
-console.log(blob.size) // 4 GiB
+const blob = new Blob([fsFile, fsBlob, 'memory', new Uint8Array(10)])
+console.log(blob.size) // ~4 GiB
 ```
 
-See the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/Blob) and [tests](https://github.com/node-fetch/fetch-blob/blob/master/test.js) for more details.
+`blobFrom|blobFromSync|fileFrom|fileFromSync(path, [mimetype])`
+
+### Creating Blobs backed up by other async sources
+Our Blob & File class are more generic then any other polyfills in the way that it can accept any blob look-a-like item
+An example of this is that our blob implementation can be constructed with parts coming from [BlobDataItem](https://github.com/node-fetch/fetch-blob/blob/8ef89adad40d255a3bbd55cf38b88597c1cd5480/from.js#L32) (aka a filepath) or from [buffer.Blob](https://nodejs.org/api/buffer.html#buffer_new_buffer_blob_sources_options), It dose not have to implement all the methods - just enough that it can be read/understood by our Blob implementation. The minium requirements is that it has `Symbol.toStringTag`, `size`, `slice()` and either a `stream()` or a `arrayBuffer()` method. If you then wrap it in our Blob or File `new Blob([blobDataItem])` then you get all of the other methods that should be implemented in a blob or file
+
+An example of this could be to create a file or blob like item coming from a remote HTTP request. Or from a DataBase
+
+See the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/Blob) and [tests](https://github.com/node-fetch/fetch-blob/blob/master/test.js) for more details of how to use the Blob.
 
 [npm-image]: https://flat.badgen.net/npm/v/fetch-blob
 [npm-url]: https://www.npmjs.com/package/fetch-blob
