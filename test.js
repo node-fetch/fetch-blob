@@ -273,7 +273,7 @@ if (buffer.Blob) {
 }
 
 test('File is a instance of blob', t => {
-	t.is(new File([], '') instanceof Blob, true);
+	t.true(new File([], '') instanceof Blob);
 });
 
 test('fileFrom returns the name', async t => {
@@ -302,7 +302,7 @@ test('fileFrom(path, type) read/sets the lastModified ', async t => {
 	// Earlier test updates the last modified date to now
 	t.is(typeof file.lastModified, 'number');
 	// The lastModifiedDate is deprecated and removed from spec
-	t.is('lastModifiedDate' in file, false);
+	t.false('lastModifiedDate' in file);
 	t.is(file.lastModified > Date.now() - 60000, true);
 });
 
@@ -317,9 +317,8 @@ test('blobFrom(path) sets empty type', async t => {
 });
 
 test('new File() throws with too few args', t => {
-	try {
-		const file = new File(); // eslint-disable-line no-unused-vars
-	} catch (error) {
-		t.is(error.constructor.name, 'TypeError');
-	}
+	t.throws(() => new File(), {
+		instanceOf: TypeError,
+		message: 'Failed to construct \'File\': 2 arguments required.'
+	});
 });
