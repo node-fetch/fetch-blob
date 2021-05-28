@@ -165,7 +165,7 @@ test('Reading after modified should fail', async t => {
 	const now = new Date();
 	// Change modified time
 	fs.utimesSync('./LICENSE', now, now);
-	const error = await blob.text().catch(error => error);
+	const error = await t.throwsAsync(blob.text());
 	t.is(error.constructor.name, 'DOMException');
 	t.is(error instanceof Error, true);
 	t.is(error.name, 'NotReadableError');
@@ -179,7 +179,7 @@ test('Reading file after modified should fail', async t => {
 	const now = new Date();
 	// Change modified time
 	fs.utimesSync('./LICENSE', now, now);
-	const error = await file.text().catch(error => error);
+	const error = await t.throwsAsync(file.text());
 	t.is(error.constructor.name, 'DOMException');
 	t.is(error instanceof Error, true);
 	t.is(error.name, 'NotReadableError');
