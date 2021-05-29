@@ -1,11 +1,13 @@
 {
     "name": "fetch-blob",
-    "version": "3.0.0-rc.0",
-    "description": "A Blob implementation in Node.js, originally from node-fetch.",
+    "version": "3.0.0",
+    "description": "Blob & File implementation in Node.js, originally from node-fetch.",
     "main": "index.js",
     "type": "module",
     "files": [
         "from.js",
+        "file.js",
+        "file.d.ts",
         "index.js",
         "index.d.ts",
         "from.d.ts"
@@ -20,12 +22,13 @@
     "repository": "https://github.com/node-fetch/fetch-blob.git",
     "keywords": [
         "blob",
+        "file",
         "node-fetch"
     ],
     "engines": {
         "node": ">=14.0.0"
     },
-    "author": "David Frank",
+    "author": "Jimmy Wärting <jimmy@warting.se> (https://jimmy.warting.se)",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/node-fetch/fetch-blob/issues"
@@ -33,7 +36,9 @@
     "homepage": "https://github.com/node-fetch/fetch-blob#readme",
     "xo": {
         "rules": {
-            "unicorn/import-index": "off",
+            "unicorn/prefer-node-protocol": "off",
+            "unicorn/numeric-separators-style": "off",
+            "unicorn/prefer-spread": "off",
             "import/extensions": [
                 "error",
                 "always",
@@ -52,18 +57,22 @@
             }
         ]
     },
-    "peerDependenciesMeta": {
-        "domexception": {
-            "optional": true
-        }
-    },
     "devDependencies": {
         "ava": "^3.15.0",
-        "c8": "^7.7.1",
-        "codecov": "^3.8.1",
-        "domexception": "^2.0.1",
+        "c8": "^7.7.2",
+        "codecov": "^3.8.2",
         "node-fetch": "^3.0.0-beta.9",
-        "typescript": "^4.2.4",
-        "xo": "^0.38.2"
-    }
+        "typescript": "^4.3.2",
+        "xo": "^0.40.1"
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/jimmywarting"
+        },
+        {
+            "type": "paypal",
+            "url": "https://paypal.me/jimmywarting"
+        }
+    ]
 }

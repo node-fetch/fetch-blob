@@ -1,26 +1,54 @@
 import {statSync, createReadStream} from 'fs';
 import {stat} from 'fs/promises';
-import DOMException from 'domexception';
+import {basename} from 'path';
+import File from './file.js';
 import Blob from './index.js';
+import {MessageChannel} from 'worker_threads';
+
+const DOMException = globalThis.DOMException || (() => {
+	const port = new MessageChannel().port1
+	const ab = new ArrayBuffer(0)
+	try { port.postMessage(ab, [ab, ab]) }
+	catch (err) { return err.constructor }
+})()
 
 /**
  * @param {string} path filepath on the disk
- * @returns {Blob}
+ * @param {string} [type] mimetype to use
  */
- const blobFromSync = path => from(statSync(path), path);
+const blobFromSync = (path, type) => fromBlob(statSync(path), path, type);
 
 /**
  * @param {string} path filepath on the disk
- * @returns {Promise<Blob>}
+ * @param {string} [type] mimetype to use
  */
- const blobFrom = path => stat(path).then(stat => from(stat, path));
+const blobFrom = (path, type) => stat(path).then(stat => fromBlob(stat, path, type));
 
-const from = (stat, path) => new Blob([new BlobDataItem({
+/**
+ * @param {string} path filepath on the disk
+ * @param {string} [type] mimetype to use
+ */
+const fileFrom = (path, type) => stat(path).then(stat => fromFile(stat, path, type));
+
+/**
+ * @param {string} path filepath on the disk
+ * @param {string} [type] mimetype to use
+ */
+const fileFromSync = (path, type) => fromFile(statSync(path), path, type);
+
+const fromBlob = (stat, path, type = '') => new Blob([new BlobDataItem({
 	path,
 	size: stat.size,
 	lastModified: stat.mtimeMs,
 	start: 0
-})]);
+})], {type});
+
+const fromFile = (stat, path, type = '') => new File([new BlobDataItem({
+	path,
+	size: stat.size,
+	lastModified: stat.mtimeMs,
+	start: 0
+})], basename(path), { type, lastModified: stat.mtimeMs });
 
 /**
  * This is a blob backed up by a file on the disk
@@ -72,4 +100,4 @@ class BlobDataItem {
 }
 
 export default blobFromSync;
-export {Blob, blobFrom, blobFromSync};
+export {File, Blob, blobFrom, blobFromSync, fileFrom, fileFromSync};
