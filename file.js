@@ -16,7 +16,7 @@ export default class File extends Blob {
     super(fileBits, options);
 
     const modified = Number(options.lastModified);
-    this.#lastModified = Number.isNaN(this.#lastModified) ? modified : Date.now()
+    this.#lastModified = Number.isNaN(modified) ? modified : Date.now()
     this.#name = fileName;
   }
 
