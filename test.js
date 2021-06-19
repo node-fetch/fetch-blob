@@ -162,13 +162,19 @@ test('Reading after modified should fail', async t => {
 	await new Promise(resolve => {
 		setTimeout(resolve, 100);
 	});
-	const now = new Date();
-	// Change modified time
-	fs.utimesSync('./LICENSE', now, now);
+	fs.closeSync(fs.openSync('./LICENSE', 'a'));
 	const error = await t.throwsAsync(blob.text());
 	t.is(error.constructor.name, 'DOMException');
 	t.is(error instanceof Error, true);
 	t.is(error.name, 'NotReadableError');
+
+	const file = fileFromSync('./LICENSE');
+	// Above test updates the last modified date to now
+	t.is(typeof file.lastModified, 'number');
+	// The lastModifiedDate is deprecated and removed from spec
+	t.false('lastModifiedDate' in file);
+	const mod = file.lastModified - Date.now();
+	t.true(mod <= 0 && mod >= -100); // Close to tolerance: 0.100ms
 });
 
 test('Reading file after modified should fail', async t => {
@@ -297,13 +303,29 @@ test('fileFrom(path, type) sets the type', async t => {
 	t.is(file.type, 'text/plain');
 });
 
-test('fileFrom(path, type) read/sets the lastModified ', async t => {
-	const file = await fileFrom('./LICENSE', 'text/plain');
-	// Earlier test updates the last modified date to now
-	t.is(typeof file.lastModified, 'number');
-	// The lastModifiedDate is deprecated and removed from spec
-	t.false('lastModifiedDate' in file);
-	t.is(file.lastModified > Date.now() - 60000, true);
+test('new File(,,{lastModified: 100})', t => {
+	const mod = new File([], '', {lastModified: 100}).lastModified;
+	t.is(mod, 100);
+});
+
+test('new File(,,{lastModified: "200"})', t => {
+	const mod = new File([], '', {lastModified: '200'}).lastModified;
+	t.is(mod, 200);
+});
+
+test('new File(,,{lastModified: true})', t => {
+	const mod = new File([], '', {lastModified: true}).lastModified;
+	t.is(mod, 1);
+});
+
+test('new File(,,{lastModified: new Date()})', t => {
+	const mod = new File([], '', {lastModified: new Date()}).lastModified - Date.now();
+	t.true(mod <= 0 && mod >= -20); // Close to tolerance: 0.020ms
+});
+
+test('new File(,,{}) sets current time', t => {
+	const mod = new File([], '').lastModified - Date.now();
+	t.true(mod <= 0 && mod >= -20); // Close to tolerance: 0.020ms
 });
 
 test('blobFrom(path, type) sets the type', async t => {

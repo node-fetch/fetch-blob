@@ -1,6 +1,6 @@
 {
     "name": "fetch-blob",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "Blob & File implementation in Node.js, originally from node-fetch.",
     "main": "index.js",
     "type": "module",
@@ -26,7 +26,7 @@
         "node-fetch"
     ],
     "engines": {
-        "node": ">=14.0.0"
+        "node": "^12.20 || >= 14.13"
     },
     "author": "Jimmy Wärting <jimmy@warting.se> (https://jimmy.warting.se)",
     "license": "MIT",
@@ -39,6 +39,7 @@
             "unicorn/prefer-node-protocol": "off",
             "unicorn/numeric-separators-style": "off",
             "unicorn/prefer-spread": "off",
+            "unicorn/prefer-number-properties": "off",
             "import/extensions": [
                 "error",
                 "always",
