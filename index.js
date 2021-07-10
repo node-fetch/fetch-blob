@@ -1,7 +1,43 @@
+
+// TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
+// Node has recently added whatwg stream into core, want to use that instead when it becomes avalible.
+
+import * as stream from 'web-streams-polyfill/dist/ponyfill.es2018.js'
+
+const ReadableStream = globalThis.ReadableStream || stream.ReadableStream
+const ByteLengthQueuingStrategy = globalThis.ByteLengthQueuingStrategy || stream.ReadableStream
+
+/** @typedef {import('buffer').Blob} NodeBlob} */
+
+// Fix buffer.Blob's missing stream implantation
+import('buffer').then(m => {
+	if (m.Blob && !m.Blob.prototype.stream) {
+		m.Blob.prototype.stream = function name(params) {
+			let position = 0;
+			const blob = this;
+			const stratergy = new ByteLengthQueuingStrategy({ highWaterMark: POOL_SIZE });
+
+			return new ReadableStream({
+				type: "bytes",
+				async pull(ctrl) {
+					const chunk = blob.slice(position, Math.min(blob.size, position + POOL_SIZE));
+					const buffer = await chunk.arrayBuffer();
+					position += buffer.byteLength;
+					ctrl.enqueue(new Uint8Array(buffer))
+
+					if (position === blob.size) {
+						ctrl.close()
+					}
+				}
+			}, stratergy)
+		}
+	}
+}, () => {})
+
 // 64 KiB (same size chrome slice theirs blob into Uint8array's)
 const POOL_SIZE = 65536;
 
-/** @param {(Blob | Uint8Array)[]} parts */
+/** @param {(Blob | NodeBlob | Uint8Array)[]} parts */
 async function * toIterator (parts, clone = true) {
 	for (let part of parts) {
 		if ('stream' in part) {
@@ -116,6 +152,11 @@ export default class Blob {
 	 * @return {Promise<ArrayBuffer>}
 	 */
 	async arrayBuffer() {
+		// Easier way... Just a unnecessary overhead
+		// const view = new Uint8Array(this.size);
+		// await this.stream().getReader({mode: 'byob'}).read(view);
+		// return view.buffer;
+
 		const data = new Uint8Array(this.size);
 		let offset = 0;
 		for await (const chunk of toIterator(this.#parts, false)) {
@@ -126,14 +167,17 @@ export default class Blob {
 		return data.buffer;
 	}
 
-	/**
-	 * The Blob stream() implements partial support of the whatwg stream
-	 * by only being async iterable.
-	 *
-	 * @returns {AsyncGenerator<Uint8Array>}
-	 */
-	async * stream() {
-		yield * toIterator(this.#parts, true);
+	stream() {
+		const it = toIterator(this.#parts, true);
+		const stratergy = new ByteLengthQueuingStrategy({ highWaterMark: POOL_SIZE });
+
+		return new ReadableStream({
+			type: "bytes",
+			async pull(ctrl) {
+				const chunk = await it.next();
+				chunk.done ? ctrl.close() : ctrl.enqueue(chunk.value);
+			}
+		}, stratergy)
 	}
 
 	/**
@@ -157,6 +201,11 @@ export default class Blob {
 		let added = 0;
 
 		for (const part of parts) {
+			// don't add the overflow to new blobParts
+			if (added >= span) {
+				break;
+			}
+
 			const size = ArrayBuffer.isView(part) ? part.byteLength : part.size;
 			if (relativeStart && size <= relativeStart) {
 				// Skip the beginning and change the relative
@@ -174,11 +223,6 @@ export default class Blob {
 				}
 				blobParts.push(chunk);
 				relativeStart = 0; // All next sequential parts should start at 0
-
-				// don't add the overflow to new blobParts
-				if (added >= span) {
-					break;
-				}
 			}
 		}
 
