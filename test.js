@@ -346,7 +346,6 @@ test('new File() throws with too few args', t => {
 });
 
 test('can slice zero sized blobs', async t => {
-	// const blob = fileFromPathSync('./package.json') // or
 	const blob = new Blob();
 	const txt = await blob.slice(0, 0).text();
 	t.is(txt, '');
