@@ -75,5 +75,8 @@
             "type": "paypal",
             "url": "https://paypal.me/jimmywarting"
         }
-    ]
+    ],
+    "dependencies": {
+        "web-streams-polyfill": "^3.0.3"
+    }
 }
