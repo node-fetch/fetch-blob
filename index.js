@@ -239,7 +239,8 @@ export default class Blob {
 
 	static [Symbol.hasInstance](object) {
 		return (
-			typeof object?.constructor === 'function' &&
+			typeof object === 'object' &&
+			typeof object.constructor === 'function' &&
 			(
 				typeof object.stream === 'function' ||
 				typeof object.arrayBuffer === 'function'
