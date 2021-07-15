@@ -1,38 +1,10 @@
 
 // TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
-// Node has recently added whatwg stream into core, want to use that instead when it becomes avalible.
+// Node has recently added whatwg stream into core, want to use that instead when it becomes available.
 
-import * as stream from 'web-streams-polyfill/dist/ponyfill.es2018.js'
-
-const ReadableStream = globalThis.ReadableStream || stream.ReadableStream
-const ByteLengthQueuingStrategy = globalThis.ByteLengthQueuingStrategy || stream.ReadableStream
+import './streams.cjs';
 
 /** @typedef {import('buffer').Blob} NodeBlob} */
-
-// Fix buffer.Blob's missing stream implantation
-import('buffer').then(m => {
-	if (m.Blob && !m.Blob.prototype.stream) {
-		m.Blob.prototype.stream = function name(params) {
-			let position = 0;
-			const blob = this;
-			const stratergy = new ByteLengthQueuingStrategy({ highWaterMark: POOL_SIZE });
-
-			return new ReadableStream({
-				type: "bytes",
-				async pull(ctrl) {
-					const chunk = blob.slice(position, Math.min(blob.size, position + POOL_SIZE));
-					const buffer = await chunk.arrayBuffer();
-					position += buffer.byteLength;
-					ctrl.enqueue(new Uint8Array(buffer))
-
-					if (position === blob.size) {
-						ctrl.close()
-					}
-				}
-			}, stratergy)
-		}
-	}
-}, () => {})
 
 // 64 KiB (same size chrome slice theirs blob into Uint8array's)
 const POOL_SIZE = 65536;
@@ -171,15 +143,14 @@ export default class Blob {
 
 	stream() {
 		const it = toIterator(this.#parts, true);
-		const stratergy = new ByteLengthQueuingStrategy({ highWaterMark: POOL_SIZE });
 
 		return new ReadableStream({
-			type: "bytes",
+			type: 'bytes',
 			async pull(ctrl) {
 				const chunk = await it.next();
 				chunk.done ? ctrl.close() : ctrl.enqueue(chunk.value);
 			}
-		}, stratergy)
+		})
 	}
 
 	/**
