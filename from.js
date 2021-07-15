@@ -1,9 +1,10 @@
-import {statSync, createReadStream} from 'fs';
-import {stat} from 'fs/promises';
+import {statSync, createReadStream, promises as fs} from 'fs';
 import {basename} from 'path';
 import File from './file.js';
 import Blob from './index.js';
 import {MessageChannel} from 'worker_threads';
+
+const {stat} = fs
 
 const DOMException = globalThis.DOMException || (() => {
 	const port = new MessageChannel().port1
