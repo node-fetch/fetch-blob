@@ -160,7 +160,7 @@ test('blob part backed up by filesystem', async t => {
 test('Reading after modified should fail', async t => {
 	const blob = blobFromSync('./LICENSE');
 	await new Promise(resolve => {
-		setTimeout(resolve, 100);
+		setTimeout(resolve, 500);
 	});
 	fs.closeSync(fs.openSync('./LICENSE', 'a'));
 	const error = await t.throwsAsync(blob.text());
@@ -174,7 +174,7 @@ test('Reading after modified should fail', async t => {
 	// The lastModifiedDate is deprecated and removed from spec
 	t.false('lastModifiedDate' in file);
 	const mod = file.lastModified - Date.now();
-	t.true(mod <= 0 && mod >= -100); // Close to tolerance: 0.100ms
+	t.true(mod <= 0 && mod >= -500); // Close to tolerance: 0.500ms
 });
 
 test('Reading file after modified should fail', async t => {
@@ -241,7 +241,7 @@ test('Parts are immutable', async t => {
 test('Blobs are immutable', async t => {
 	const buf = new Uint8Array([97]);
 	const blob = new Blob([buf]);
-	const chunk = await blob.stream().next();
+	const chunk = await blob.stream().getReader().read();
 	t.is(chunk.value[0], 97);
 	chunk.value[0] = 98;
 	t.is(await blob.text(), 'a');
@@ -343,4 +343,10 @@ test('new File() throws with too few args', t => {
 		instanceOf: TypeError,
 		message: 'Failed to construct \'File\': 2 arguments required, but only 0 present.'
 	});
+});
+
+test('can slice zero sized blobs', async t => {
+	const blob = new Blob();
+	const txt = await blob.slice(0, 0).text();
+	t.is(txt, '');
 });

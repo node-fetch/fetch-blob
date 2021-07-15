@@ -1,9 +1,10 @@
-import {statSync, createReadStream} from 'fs';
-import {stat} from 'fs/promises';
+import {statSync, createReadStream, promises as fs} from 'fs';
 import {basename} from 'path';
 import File from './file.js';
 import Blob from './index.js';
 import {MessageChannel} from 'worker_threads';
+
+const {stat} = fs;
 
 const DOMException = globalThis.DOMException || (() => {
 	const port = new MessageChannel().port1
@@ -86,12 +87,10 @@ class BlobDataItem {
 		if (mtimeMs > this.lastModified) {
 			throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError');
 		}
-		if (this.size) {
-			yield * createReadStream(this.#path, {
-				start: this.#start,
-				end: this.#start + this.size - 1
-			});
-		}
+		yield * createReadStream(this.#path, {
+			start: this.#start,
+			end: this.#start + this.size - 1
+		});
 	}
 
 	get [Symbol.toStringTag]() {
