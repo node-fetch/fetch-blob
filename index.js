@@ -239,6 +239,7 @@ export default class Blob {
 
 	static [Symbol.hasInstance](object) {
 		return (
+			object &&
 			typeof object === 'object' &&
 			typeof object.constructor === 'function' &&
 			(
