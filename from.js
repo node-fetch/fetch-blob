@@ -4,7 +4,7 @@ import File from './file.js';
 import Blob from './index.js';
 import {MessageChannel} from 'worker_threads';
 
-const {stat} = fs
+const {stat} = fs;
 
 const DOMException = globalThis.DOMException || (() => {
 	const port = new MessageChannel().port1
