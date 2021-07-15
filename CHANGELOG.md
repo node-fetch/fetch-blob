@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v3.1.0
+- started to use real whatwg streams
+- degraded fs/promise to fs.promise to support node v12
+- degraded optional changing to support node v12
+
 ## v3.0.0
 - Changed WeakMap for private field (require node 12)
 - Switch to ESM
