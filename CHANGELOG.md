@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## v3.1.1
+## v3.1.2
 
 - Improved typing
 - Fixed a bug where position in iterator did not increase
