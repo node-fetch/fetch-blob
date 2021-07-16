@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v3.1.1
+
+- Improved typing
+- Fixed a bug where position in iterator did not increase
+
 ## v3.1.0
 - started to use real whatwg streams
 - degraded fs/promise to fs.promise to support node v12
