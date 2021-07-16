@@ -1,6 +1,6 @@
 
 // TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
-// Node has recently added whatwg stream into core, want to use that instead when it becomes available.
+// Node has recently added whatwg stream into core
 
 import './streams.cjs';
 
@@ -42,7 +42,7 @@ async function * toIterator (parts, clone = true) {
 	}
 }
 
-export default class Blob {
+const _Blob = class Blob {
 
 	/** @type {Array.<(Blob|Uint8Array)>} */
 	#parts = [];
@@ -69,7 +69,7 @@ export default class Blob {
 			} else if (element instanceof Blob) {
 				part = element;
 			} else {
-				part = new TextEncoder().encode(String(element));
+				part = new TextEncoder().encode(element);
 			}
 
 			size += ArrayBuffer.isView(part) ? part.byteLength : part.size;
@@ -224,10 +224,12 @@ export default class Blob {
 	}
 }
 
-Object.defineProperties(Blob.prototype, {
+Object.defineProperties(_Blob.prototype, {
 	size: {enumerable: true},
 	type: {enumerable: true},
 	slice: {enumerable: true}
 });
 
-export { Blob };
+/** @type {typeof globalThis.Blob} */
+export const Blob = _Blob;
+export default Blob;

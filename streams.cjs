@@ -3,8 +3,9 @@ const POOL_SIZE = 65536;
 
 if (!globalThis.ReadableStream) {
   try {
-    Object.assign(globalThis, require('streasm/web'))
+    Object.assign(globalThis, require('stream/web'))
   } catch (error) {
+		// TODO: Remove when only supporting node >= 16.5.0
     Object.assign(globalThis, require('web-streams-polyfill/dist/ponyfill.es2018.js'))
   }
 }
