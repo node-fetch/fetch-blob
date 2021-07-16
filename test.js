@@ -350,3 +350,15 @@ test('can slice zero sized blobs', async t => {
 	const txt = await blob.slice(0, 0).text();
 	t.is(txt, '');
 });
+
+test('returns a readable stream', t => {
+	const stream = new File([], '').stream();
+	t.true(typeof stream.getReader === 'function');
+});
+
+test('checking instanceof blob#stream', async t => {
+	// eslint-disable-next-line node/no-unsupported-features/es-syntax
+	const {ReadableStream} = await import('stream/web').catch(_ => import('web-streams-polyfill/dist/ponyfill.es2018.js'));
+	const stream = new File([], '').stream();
+	t.true(stream instanceof ReadableStream);
+});

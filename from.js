@@ -1,8 +1,9 @@
 import {statSync, createReadStream, promises as fs} from 'fs';
 import {basename} from 'path';
+import {MessageChannel} from 'worker_threads';
+
 import File from './file.js';
 import Blob from './index.js';
-import {MessageChannel} from 'worker_threads';
 
 const {stat} = fs;
 
@@ -37,6 +38,7 @@ const fileFrom = (path, type) => stat(path).then(stat => fromFile(stat, path, ty
  */
 const fileFromSync = (path, type) => fromFile(statSync(path), path, type);
 
+// @ts-ignore
 const fromBlob = (stat, path, type = '') => new Blob([new BlobDataItem({
 	path,
 	size: stat.size,
@@ -44,6 +46,7 @@ const fromBlob = (stat, path, type = '') => new Blob([new BlobDataItem({
 	start: 0
 })], {type});
 
+// @ts-ignore
 const fromFile = (stat, path, type = '') => new File([new BlobDataItem({
 	path,
 	size: stat.size,

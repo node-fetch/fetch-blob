@@ -1,10 +1,12 @@
+/* c8 ignore start */
 // 64 KiB (same size chrome slice theirs blob into Uint8array's)
 const POOL_SIZE = 65536;
 
 if (!globalThis.ReadableStream) {
   try {
-    Object.assign(globalThis, require('streasm/web'))
+    Object.assign(globalThis, require('stream/web'))
   } catch (error) {
+		// TODO: Remove when only supporting node >= 16.5.0
     Object.assign(globalThis, require('web-streams-polyfill/dist/ponyfill.es2018.js'))
   }
 }
@@ -32,3 +34,4 @@ try {
 		}
 	}
 } catch (error) {}
+/* c8 ignore end */

@@ -1,6 +1,6 @@
 import Blob from './index.js';
 
-export default class File extends Blob {
+const _File = class File extends Blob {
   #lastModified = 0;
   #name = '';
 
@@ -8,7 +8,7 @@ export default class File extends Blob {
    * @param {*[]} fileBits
    * @param {string} fileName
    * @param {{lastModified?: number, type?: string}} options
-   */ // @ts-ignore
+   */// @ts-ignore
   constructor(fileBits, fileName, options = {}) {
     if (arguments.length < 2) {
       throw new TypeError(`Failed to construct 'File': 2 arguments required, but only ${arguments.length} present.`);
@@ -33,4 +33,6 @@ export default class File extends Blob {
   }
 }
 
-export { File };
+/** @type {typeof globalThis.File} */// @ts-ignore
+export const File = _File;
+export default File;
