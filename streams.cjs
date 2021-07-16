@@ -1,3 +1,4 @@
+/* c8 ignore start */
 // 64 KiB (same size chrome slice theirs blob into Uint8array's)
 const POOL_SIZE = 65536;
 
@@ -33,3 +34,4 @@ try {
 		}
 	}
 } catch (error) {}
+/* c8 ignore end */
