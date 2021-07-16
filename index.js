@@ -21,8 +21,8 @@ async function * toIterator (parts, clone = true) {
 				while (position !== end) {
 					const size = Math.min(end - position, POOL_SIZE);
 					const chunk = part.buffer.slice(position, position + size);
-					yield new Uint8Array(chunk);
 					position += chunk.byteLength;
+					yield new Uint8Array(chunk);
 				}
 			} else {
 				yield part;
