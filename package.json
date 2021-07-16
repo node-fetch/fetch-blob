@@ -10,7 +10,8 @@
         "file.d.ts",
         "index.js",
         "index.d.ts",
-        "from.d.ts"
+        "from.d.ts",
+        "streams.cjs"
     ],
     "scripts": {
         "lint": "xo test.js",
