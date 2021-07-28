@@ -2,23 +2,38 @@
     "name": "fetch-blob",
     "version": "3.1.2",
     "description": "Blob & File implementation in Node.js, originally from node-fetch.",
-    "main": "index.js",
+    "main": "dist/esm/index.mjs",
     "type": "module",
     "files": [
-        "from.js",
-        "file.js",
+        "dist",
         "file.d.ts",
-        "index.js",
         "index.d.ts",
-        "from.d.ts",
-        "streams.cjs"
+        "from.d.ts"
     ],
+    "exports": {
+        ".": {
+            "import": "./dist/esm/index.mjs",
+            "require": "./dist/cjs/index.cjs"
+        },
+        "./file": {
+            "import": "./dist/esm/file.mjs",
+            "require": "./dist/cjs/file.cjs"
+        },
+        "./from": {
+            "import": "./dist/esm/from.mjs",
+            "require": "./dist/cjs/from.cjs"
+        }
+    },
     "scripts": {
+        "build": "npm run build:esm && npm run build:cjs && npm run build:types",
+        "build:esm": "esbuild index.js --bundle --platform=node --format=esm --outfile=dist/esm/index.mjs && esbuild file.js from.js --platform=node --format=esm --outdir=dist/esm --out-extension:.js=.mjs",
+        "build:cjs": "esbuild index.js --bundle --platform=node --format=cjs --outfile=dist/cjs/index.cjs && esbuild file.js from.js --platform=node --format=cjs --outdir=dist/cjs --out-extension:.js=.cjs",
+        "build:types": "tsc --declaration --emitDeclarationOnly --allowJs index.js from.js",
         "lint": "xo test.js",
         "test": "npm run lint && ava",
         "report": "c8 --reporter json --reporter text ava",
         "coverage": "c8 --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
-        "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js from.js"
+        "prepublishOnly": "npm run build"
     },
     "repository": "https://github.com/node-fetch/fetch-blob.git",
     "keywords": [
@@ -63,8 +78,10 @@
         "ava": "^3.15.0",
         "c8": "^7.7.2",
         "codecov": "^3.8.2",
+        "esbuild": "^0.12.16",
         "node-fetch": "^3.0.0-beta.9",
         "typescript": "^4.3.2",
+        "web-streams-polyfill": "^3.0.3",
         "xo": "^0.40.1"
     },
     "funding": [
@@ -76,8 +93,5 @@
             "type": "paypal",
             "url": "https://paypal.me/jimmywarting"
         }
-    ],
-    "dependencies": {
-        "web-streams-polyfill": "^3.0.3"
-    }
+    ]
 }
