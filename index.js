@@ -58,9 +58,10 @@ const _Blob = class Blob {
 	 * @param {{ type?: string }} [options]
 	 */
 	constructor(blobParts = [], options = {}) {
+		const parts = [];
 		let size = 0;
 
-		const parts = blobParts.map(element => {
+		for (const element of blobParts) {
 			let part;
 			if (ArrayBuffer.isView(element)) {
 				part = new Uint8Array(element.buffer.slice(element.byteOffset, element.byteOffset + element.byteLength));
@@ -73,8 +74,8 @@ const _Blob = class Blob {
 			}
 
 			size += ArrayBuffer.isView(part) ? part.byteLength : part.size;
-			return part;
-		});
+			parts.push(part);
+		}
 
 		const type = options.type === undefined ? '' : String(options.type);
 
