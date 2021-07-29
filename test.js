@@ -36,40 +36,40 @@ test('Blob ctor parts', async t => {
 	t.is(await blob.text(), 'abcdefg[object Object]foo=');
 });
 
-test("Blob ctor threats an object with @@iterator as a sequence", async t => {
-	const blob = new Blob({[Symbol.iterator]: Array.prototype[Symbol.iterator]})
+test('Blob ctor threats an object with @@iterator as a sequence', async t => {
+	const blob = new Blob({[Symbol.iterator]: Array.prototype[Symbol.iterator]});
 
-	t.is(blob.size, 0)
-	t.is(await blob.text(), "")
-})
+	t.is(blob.size, 0);
+	t.is(await blob.text(), '');
+});
 
-test("Blob ctor reads blob parts from object with @@iterator", async t => {
-	const input = ["one", "two", "three"]
-	const expected = input.join("")
+test('Blob ctor reads blob parts from object with @@iterator', async t => {
+	const input = ['one', 'two', 'three'];
+	const expected = input.join('');
 
 	const blob = new Blob({
 		* [Symbol.iterator]() {
-			yield* input
+			yield * input;
 		}
-	})
+	});
 
-	t.is(blob.size, new TextEncoder().encode(expected).byteLength)
-	t.is(await blob.text(), expected)
-})
+	t.is(blob.size, new TextEncoder().encode(expected).byteLength);
+	t.is(await blob.text(), expected);
+});
 
-test("Blob ctor threats a string as a sequence", async t => {
-	const expected = "abc"
-	const blob = new Blob(expected)
+test('Blob ctor threats a string as a sequence', async t => {
+	const expected = 'abc';
+	const blob = new Blob(expected);
 
-	t.is(await blob.text(), expected)
-})
+	t.is(await blob.text(), expected);
+});
 
-test("Blob ctor threats Uint8Array as a sequence", async t => {
-	const input = [1, 2, 3]
-	const blob = new Blob(new Uint8Array(input))
+test('Blob ctor threats Uint8Array as a sequence', async t => {
+	const input = [1, 2, 3];
+	const blob = new Blob(new Uint8Array(input));
 
-	t.is(await blob.text(), input.join(""))
-})
+	t.is(await blob.text(), input.join(''));
+});
 
 test('Blob size', t => {
 	const data = 'a=1';
