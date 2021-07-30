@@ -57,11 +57,8 @@ test('Blob ctor reads blob parts from object with @@iterator', async t => {
 	t.is(await blob.text(), expected);
 });
 
-test('Blob ctor threats a string as a sequence', async t => {
-	const expected = 'abc';
-	const blob = new Blob(expected);
-
-	t.is(await blob.text(), expected);
+test('Blob ctor throws a string', t => {
+	t.throws(() => new Blob('abc'));
 });
 
 test('Blob ctor threats Uint8Array as a sequence', async t => {

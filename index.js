@@ -60,6 +60,15 @@ const _Blob = class Blob {
 	constructor(blobParts = [], options = {}) {
 		const parts = [];
 		let size = 0;
+		if (typeof blobParts !== 'object') {
+			throw new TypeError(`Failed to construct 'Blob': parameter 1 is not an iterable object.`);
+		}
+
+		if (typeof options !== 'object' && typeof options !== 'function') {
+			throw new TypeError(`Failed to construct 'Blob': parameter 2 cannot convert to dictionary.`);
+		}
+
+		if (options === null) options = {};
 
 		for (const element of blobParts) {
 			let part;
@@ -79,7 +88,7 @@ const _Blob = class Blob {
 
 		const type = options.type === undefined ? '' : String(options.type);
 
-		this.#type = /[^\u0020-\u007E]/.test(type) ? '' : type;
+		this.#type = /^[\x20-\x7E]*$/.test(type) ? type : '';
 		this.#size = size;
 		this.#parts = parts;
 	}
@@ -195,6 +204,7 @@ const _Blob = class Blob {
 					chunk = part.slice(relativeStart, Math.min(size, relativeEnd));
 					added += chunk.size
 				}
+				relativeEnd -= size;
 				blobParts.push(chunk);
 				relativeStart = 0; // All next sequential parts should start at 0
 			}
