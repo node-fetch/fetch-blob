@@ -17,8 +17,8 @@
         "lint": "xo test.js",
         "test-wpt": "node --experimental-loader ./test/http-loader.js ./test/test-wpt-in-node.js",
         "test": "npm run lint && ava test.js",
-        "report": "c8 --reporter json --reporter text ava",
-        "coverage": "c8 --reporter json --reporter text ava && codecov -f coverage/coverage-final.json",
+        "report": "c8 --reporter json --reporter text ava test.js",
+        "coverage": "c8 --reporter json --reporter text ava test.js && codecov -f coverage/coverage-final.json",
         "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js from.js"
     },
     "repository": "https://github.com/node-fetch/fetch-blob.git",
