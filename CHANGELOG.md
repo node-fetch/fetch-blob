@@ -1,5 +1,23 @@
-Changelog
-=========
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
+project adheres to [Semantic Versioning](http://semver.org/).
+
+(Unreleased)
+==================
+### Removed
+- 
+### Changed
+- 
+### Added
+-
+### Fixed
+- Allow usage of iterable object in Blob constructor. [#108]
+- Run test WPT test against our impl [#109]
+- File name are now casted to string [#109]
+- Slicing in the middle of multiple parts added more bytes than what what it should have [#109]
 
 ## v3.1.2
 
@@ -80,3 +98,6 @@ Changelog
 ## v1.0.0
 
 - Major: initial release
+
+[#108]: https://github.com/node-fetch/fetch-blob/pull/108
+[#109]: https://github.com/node-fetch/fetch-blob/pull/109
