@@ -15,9 +15,11 @@ const _File = class File extends Blob {
     }
     super(fileBits, options);
 
+    if (options === null) options = {};
+
     const modified = Number(options.lastModified);
     this.#lastModified = Number.isNaN(modified) ? Date.now() : modified
-    this.#name = fileName;
+    this.#name = String(fileName);
   }
 
   get name() {
