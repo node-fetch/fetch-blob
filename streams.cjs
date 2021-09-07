@@ -7,7 +7,7 @@ if (!globalThis.ReadableStream) {
     Object.assign(globalThis, require('stream/web'))
   } catch (error) {
 		// TODO: Remove when only supporting node >= 16.5.0
-    Object.assign(globalThis, require('web-streams-polyfill/dist/ponyfill.es2018.js'))
+    require('web-streams-polyfill/polyfill')
   }
 }
 

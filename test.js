@@ -388,9 +388,7 @@ test('returns a readable stream', t => {
 	t.true(typeof stream.getReader === 'function');
 });
 
-test('checking instanceof blob#stream', async t => {
-	// eslint-disable-next-line node/no-unsupported-features/es-syntax
-	const {ReadableStream} = await import('stream/web').catch(_ => import('web-streams-polyfill/dist/ponyfill.es2018.js'));
+test('checking instanceof blob#stream', t => {
 	const stream = new File([], '').stream();
-	t.true(stream instanceof ReadableStream);
+	t.true(stream instanceof globalThis.ReadableStream);
 });

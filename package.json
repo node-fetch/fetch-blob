@@ -79,6 +79,6 @@
         }
     ],
     "dependencies": {
-        "web-streams-polyfill": "^3.0.3"
+        "web-streams-polyfill": "^4.0.0-beta.1"
     }
 }
