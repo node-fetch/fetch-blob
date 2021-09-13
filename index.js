@@ -118,7 +118,7 @@ const _Blob = class Blob {
 	async text() {
 		// More optimized than using this.arrayBuffer()
 		// that requires twice as much ram
-		const decoder = new TextDecoder();
+		const decoder = new TextDecoder('utf-8', { fatal: false });
 		let str = '';
 		for await (let part of toIterator(this.#parts, false)) {
 			str += decoder.decode(part, { stream: true });
