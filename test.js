@@ -58,7 +58,17 @@ test('Blob ctor reads blob parts from object with @@iterator', async t => {
 });
 
 test('Blob ctor throws a string', t => {
-	t.throws(() => new Blob('abc'));
+	t.throws(() => new Blob('abc'), {
+		instanceOf: TypeError,
+		message: 'Failed to construct \'Blob\': The provided value cannot be converted to a sequence.'
+	});
+});
+
+test('Blob ctor throws an error for an object that does not have @@iterable method', t => {
+	t.throws(() => new Blob({}), {
+		instanceOf: TypeError,
+		message: 'Failed to construct \'Blob\': The object must have a callable @@iterator property.'
+	});
 });
 
 test('Blob ctor threats Uint8Array as a sequence', async t => {

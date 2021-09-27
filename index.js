@@ -100,12 +100,16 @@ const _Blob = class Blob {
 	 * @param {{ type?: string }} [options]
 	 */
 	constructor(blobParts = [], options = {}) {
-		if (typeof blobParts !== 'object') {
-			throw new TypeError(`Failed to construct 'Blob': parameter 1 is not an iterable object.`);
-		}
+		if (typeof blobParts !== "object" || blobParts === null) {
+      throw new TypeError('Failed to construct \'Blob\': The provided value cannot be converted to a sequence.');
+    }
+
+		if (typeof blobParts[Symbol.iterator] !== "function") {
+      throw new TypeError('Failed to construct \'Blob\': The object must have a callable @@iterator property.');
+    }
 
 		if (typeof options !== 'object' && typeof options !== 'function') {
-			throw new TypeError(`Failed to construct 'Blob': parameter 2 cannot convert to dictionary.`);
+			throw new TypeError('Failed to construct \'Blob\': parameter 2 cannot convert to dictionary.');
 		}
 
 		if (options === null) options = {};
