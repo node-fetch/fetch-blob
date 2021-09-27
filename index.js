@@ -50,38 +50,38 @@ async function * toIterator (parts, clone = true) {
  */
 function* sliceBlob(blobParts, blobSize, start, end) {
 	let relativeStart = start < 0 ? Math.max(blobSize + start, 0) : Math.min(start, blobSize);
-  let relativeEnd = end < 0 ? Math.max(blobSize + end, 0) : Math.min(end, blobSize);
+	let relativeEnd = end < 0 ? Math.max(blobSize + end, 0) : Math.min(end, blobSize);
 
-  const span = Math.max(relativeEnd - relativeStart, 0);
+	const span = Math.max(relativeEnd - relativeStart, 0);
 
-  let added = 0;
-  for (const part of blobParts) {
-    if (added >= span) {
-      break;
-    }
+	let added = 0;
+	for (const part of blobParts) {
+		if (added >= span) {
+			break;
+		}
 
-    const partSize = ArrayBuffer.isView(part) ? part.byteLength : part.size;
-    if (relativeStart && partSize <= relativeStart) {
-      // Skip the beginning and change the relative
-      // start & end position as we skip the unwanted parts
-      relativeStart -= partSize;
-      relativeEnd -= partSize;
-    } else {
-      let chunk;
-      if (ArrayBuffer.isView(part)) {
-        chunk = part.subarray(relativeStart, Math.min(partSize, relativeEnd));
-        added += chunk.byteLength;
-      } else {
-        chunk = part.slice(relativeStart, Math.min(partSize, relativeEnd));
-        added += chunk.size;
-      }
+		const partSize = ArrayBuffer.isView(part) ? part.byteLength : part.size;
+		if (relativeStart && partSize <= relativeStart) {
+			// Skip the beginning and change the relative
+			// start & end position as we skip the unwanted parts
+			relativeStart -= partSize;
+			relativeEnd -= partSize;
+		} else {
+			let chunk;
+			if (ArrayBuffer.isView(part)) {
+				chunk = part.subarray(relativeStart, Math.min(partSize, relativeEnd));
+				added += chunk.byteLength;
+			} else {
+				chunk = part.slice(relativeStart, Math.min(partSize, relativeEnd));
+				added += chunk.size;
+			}
 
-      relativeEnd -= partSize;
-      relativeStart = 0; // All next sequential parts should start at 0
+			relativeEnd -= partSize;
+			relativeStart = 0; // All next sequential parts should start at 0
 
-      yield chunk;
-    }
-  }
+			yield chunk;
+		}
+	}
 }
 
 const _Blob = class Blob {
@@ -101,12 +101,12 @@ const _Blob = class Blob {
 	 */
 	constructor(blobParts = [], options = {}) {
 		if (typeof blobParts !== "object" || blobParts === null) {
-      throw new TypeError('Failed to construct \'Blob\': The provided value cannot be converted to a sequence.');
-    }
+			throw new TypeError('Failed to construct \'Blob\': The provided value cannot be converted to a sequence.');
+		}
 
 		if (typeof blobParts[Symbol.iterator] !== "function") {
-      throw new TypeError('Failed to construct \'Blob\': The object must have a callable @@iterator property.');
-    }
+			throw new TypeError('Failed to construct \'Blob\': The object must have a callable @@iterator property.');
+		}
 
 		if (typeof options !== 'object' && typeof options !== 'function') {
 			throw new TypeError('Failed to construct \'Blob\': parameter 2 cannot convert to dictionary.');
