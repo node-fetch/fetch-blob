@@ -365,6 +365,25 @@ test('new File(,,{lastModified: new Date()})', t => {
 	t.true(mod <= 0 && mod >= -20); // Close to tolerance: 0.020ms
 });
 
+test('new File(,,{lastModified: null})', t => {
+	const mod = new File([], '', {lastModified: null}).lastModified;
+	t.is(mod, 0);
+});
+
+test("Interpretes NaN value in lastModified option as 0", t => {
+	t.plan(3);
+
+	const values = ['Not a Number', [], {}];
+
+	// I can't really see anything about this in the spec,
+	// but this is how browsers handle type casting for this option...
+	for (const lastModified of values) {
+		const file = new File(['Some content'], 'file.txt', {lastModified});
+
+		t.is(file.lastModified, 0);
+	}
+});
+
 test('new File(,,{}) sets current time', t => {
 	const mod = new File([], '').lastModified - Date.now();
 	t.true(mod <= 0 && mod >= -20); // Close to tolerance: 0.020ms
