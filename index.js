@@ -202,6 +202,10 @@ const _Blob = class Blob {
 			async pull(ctrl) {
 				const chunk = await it.next();
 				chunk.done ? ctrl.close() : ctrl.enqueue(chunk.value);
+			},
+
+			async cancel() {
+				await it.return()
 			}
 		})
 	}

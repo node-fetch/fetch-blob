@@ -133,6 +133,20 @@ test('Blob stream()', async t => {
 	}
 });
 
+test('Blob stream() can be cancelled', async t => {
+	const stream = new Blob(['Some content']).stream();
+
+	// Cancel the stream before start reading, or this will throw an error
+	await stream.cancel();
+
+	const iterator = stream[Symbol.asyncIterator]();
+
+	const {done, value: chunk} = await iterator.next();
+
+	t.true(done);
+	t.is(chunk, undefined);
+});
+
 test('Blob toString()', t => {
 	const data = 'a=1';
 	const type = 'text/plain';
@@ -365,12 +379,17 @@ test('new File(,,{lastModified: new Date()})', t => {
 	t.true(mod <= 0 && mod >= -20); // Close to tolerance: 0.020ms
 });
 
+test('new File(,,{lastModified: undefined})', t => {
+	const mod = new File([], '', {lastModified: undefined}).lastModified - Date.now();
+	t.true(mod <= 0 && mod >= -20); // Close to tolerance: 0.020ms
+});
+
 test('new File(,,{lastModified: null})', t => {
 	const mod = new File([], '', {lastModified: null}).lastModified;
 	t.is(mod, 0);
 });
 
-test("Interpretes NaN value in lastModified option as 0", t => {
+test('Interpretes NaN value in lastModified option as 0', t => {
 	t.plan(3);
 
 	const values = ['Not a Number', [], {}];
