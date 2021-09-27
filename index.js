@@ -58,8 +58,6 @@ const _Blob = class Blob {
 	 * @param {{ type?: string }} [options]
 	 */
 	constructor(blobParts = [], options = {}) {
-		const parts = [];
-		let size = 0;
 		if (typeof blobParts !== 'object') {
 			throw new TypeError(`Failed to construct 'Blob': parameter 1 is not an iterable object.`);
 		}
@@ -82,15 +80,13 @@ const _Blob = class Blob {
 				part = new TextEncoder().encode(element);
 			}
 
-			size += ArrayBuffer.isView(part) ? part.byteLength : part.size;
-			parts.push(part);
+			this.#size += ArrayBuffer.isView(part) ? part.byteLength : part.size;
+			this.#parts.push(part);
 		}
 
 		const type = options.type === undefined ? '' : String(options.type);
 
 		this.#type = /^[\x20-\x7E]*$/.test(type) ? type : '';
-		this.#size = size;
-		this.#parts = parts;
 	}
 
 	/**
