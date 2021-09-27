@@ -110,6 +110,7 @@ const _Blob = class Blob {
 
 		if (options === null) options = {};
 
+		const encoder = new TextEncoder()
 		for (const element of blobParts) {
 			let part;
 			if (ArrayBuffer.isView(element)) {
@@ -119,7 +120,7 @@ const _Blob = class Blob {
 			} else if (element instanceof Blob) {
 				part = element;
 			} else {
-				part = new TextEncoder().encode(element);
+				part = encoder.encode(element);
 			}
 
 			this.#size += ArrayBuffer.isView(part) ? part.byteLength : part.size;
