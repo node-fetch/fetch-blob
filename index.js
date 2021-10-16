@@ -177,7 +177,7 @@ const _Blob = class Blob {
 	 * @param {number} [end]
 	 * @param {string} [type]
 	 */
-		slice(start = 0, end = this.size, type = '') {
+	slice(start = 0, end = this.size, type = '') {
 		const {size} = this;
 
 		let relativeStart = start < 0 ? Math.max(size + start, 0) : Math.min(start, size);
