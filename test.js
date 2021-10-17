@@ -139,9 +139,9 @@ test('Blob stream() can be cancelled', async t => {
 	// Cancel the stream before start reading, or this will throw an error
 	await stream.cancel();
 
-	const iterator = stream[Symbol.asyncIterator]();
+	const reader = stream.getReader();
 
-	const {done, value: chunk} = await iterator.next();
+	const {done, value: chunk} = await reader.read();
 
 	t.true(done);
 	t.is(chunk, undefined);
