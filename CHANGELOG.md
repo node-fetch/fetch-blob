@@ -18,6 +18,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Run test WPT test against our impl [#109]
 - File name are now casted to string [#109]
 - Slicing in the middle of multiple parts added more bytes than what what it should have [#109]
+- Prefixed `stream/web` import with `node:` to allow easier static analysis detection of Node built-ins [#122]
 
 ## v3.1.2
 
