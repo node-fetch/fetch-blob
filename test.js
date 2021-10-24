@@ -58,7 +58,17 @@ test('Blob ctor reads blob parts from object with @@iterator', async t => {
 });
 
 test('Blob ctor throws a string', t => {
-	t.throws(() => new Blob('abc'));
+	t.throws(() => new Blob('abc'), {
+		instanceOf: TypeError,
+		message: 'Failed to construct \'Blob\': The provided value cannot be converted to a sequence.'
+	});
+});
+
+test('Blob ctor throws an error for an object that does not have @@iterable method', t => {
+	t.throws(() => new Blob({}), {
+		instanceOf: TypeError,
+		message: 'Failed to construct \'Blob\': The object must have a callable @@iterator property.'
+	});
 });
 
 test('Blob ctor threats Uint8Array as a sequence', async t => {
@@ -121,6 +131,20 @@ test('Blob stream()', async t => {
 	for await (const chunk of blob.stream()) {
 		t.is(chunk.join(), [97, 61, 49].join());
 	}
+});
+
+test('Blob stream() can be cancelled', async t => {
+	const stream = new Blob(['Some content']).stream();
+
+	// Cancel the stream before start reading, or this will throw an error
+	await stream.cancel();
+
+	const reader = stream.getReader();
+
+	const {done, value: chunk} = await reader.read();
+
+	t.true(done);
+	t.is(chunk, undefined);
 });
 
 test('Blob toString()', t => {
@@ -353,6 +377,30 @@ test('new File(,,{lastModified: true})', t => {
 test('new File(,,{lastModified: new Date()})', t => {
 	const mod = new File([], '', {lastModified: new Date()}).lastModified - Date.now();
 	t.true(mod <= 0 && mod >= -20); // Close to tolerance: 0.020ms
+});
+
+test('new File(,,{lastModified: undefined})', t => {
+	const mod = new File([], '', {lastModified: undefined}).lastModified - Date.now();
+	t.true(mod <= 0 && mod >= -20); // Close to tolerance: 0.020ms
+});
+
+test('new File(,,{lastModified: null})', t => {
+	const mod = new File([], '', {lastModified: null}).lastModified;
+	t.is(mod, 0);
+});
+
+test('Interpretes NaN value in lastModified option as 0', t => {
+	t.plan(3);
+
+	const values = ['Not a Number', [], {}];
+
+	// I can't really see anything about this in the spec,
+	// but this is how browsers handle type casting for this option...
+	for (const lastModified of values) {
+		const file = new File(['Some content'], 'file.txt', {lastModified});
+
+		t.is(file.lastModified, 0);
+	}
 });
 
 test('new File(,,{}) sets current time', t => {

@@ -17,8 +17,12 @@ const _File = class File extends Blob {
 
     if (options === null) options = {};
 
-    const modified = Number(options.lastModified);
-    this.#lastModified = Number.isNaN(modified) ? Date.now() : modified
+    // Simulate WebIDL type casting for NaN value in lastModified option.
+    const lastModified = options.lastModified === undefined ? Date.now() : Number(options.lastModified);
+    if (!Number.isNaN(lastModified)) {
+      this.#lastModified = lastModified;
+    }
+
     this.#name = String(fileName);
   }
 

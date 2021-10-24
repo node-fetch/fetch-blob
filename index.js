@@ -59,18 +59,21 @@ const _Blob = class Blob {
 	 * @param {{ type?: string }} [options]
 	 */
 	constructor(blobParts = [], options = {}) {
-		const parts = [];
-		let size = 0;
-		if (typeof blobParts !== 'object') {
-			throw new TypeError(`Failed to construct 'Blob': parameter 1 is not an iterable object.`);
+		if (typeof blobParts !== "object" || blobParts === null) {
+			throw new TypeError('Failed to construct \'Blob\': The provided value cannot be converted to a sequence.');
+		}
+
+		if (typeof blobParts[Symbol.iterator] !== "function") {
+			throw new TypeError('Failed to construct \'Blob\': The object must have a callable @@iterator property.');
 		}
 
 		if (typeof options !== 'object' && typeof options !== 'function') {
-			throw new TypeError(`Failed to construct 'Blob': parameter 2 cannot convert to dictionary.`);
+			throw new TypeError('Failed to construct \'Blob\': parameter 2 cannot convert to dictionary.');
 		}
 
 		if (options === null) options = {};
 
+		const encoder = new TextEncoder()
 		for (const element of blobParts) {
 			let part;
 			if (ArrayBuffer.isView(element)) {
@@ -80,18 +83,16 @@ const _Blob = class Blob {
 			} else if (element instanceof Blob) {
 				part = element;
 			} else {
-				part = new TextEncoder().encode(element);
+				part = encoder.encode(element);
 			}
 
-			size += ArrayBuffer.isView(part) ? part.byteLength : part.size;
-			parts.push(part);
+			this.#size += ArrayBuffer.isView(part) ? part.byteLength : part.size;
+			this.#parts.push(part);
 		}
 
 		const type = options.type === undefined ? '' : String(options.type);
 
 		this.#type = /^[\x20-\x7E]*$/.test(type) ? type : '';
-		this.#size = size;
-		this.#parts = parts;
 	}
 
 	/**
@@ -160,6 +161,10 @@ const _Blob = class Blob {
 			async pull(ctrl) {
 				const chunk = await it.next();
 				chunk.done ? ctrl.close() : ctrl.enqueue(chunk.value);
+			},
+
+			async cancel() {
+				await it.return()
 			}
 		})
 	}
