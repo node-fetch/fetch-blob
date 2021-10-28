@@ -8,9 +8,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 (Unreleased)
 ==================
 ### Removed
-- 
+-
 ### Changed
-- 
+-
 ### Added
 -
 ### Fixed
@@ -19,6 +19,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - File name are now casted to string [#109]
 - Slicing in the middle of multiple parts added more bytes than what what it should have [#109]
 - Prefixed `stream/web` import with `node:` to allow easier static analysis detection of Node built-ins [#122]
+- Added `node:` prefix in `from.js` as well [#114]
+- Suppress warning when importing `stream/web` [#114]
 
 ## v3.1.2
 
@@ -102,3 +104,4 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 [#108]: https://github.com/node-fetch/fetch-blob/pull/108
 [#109]: https://github.com/node-fetch/fetch-blob/pull/109
+[#114]: https://github.com/node-fetch/fetch-blob/pull/114
