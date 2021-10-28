@@ -3,16 +3,30 @@
 const POOL_SIZE = 65536;
 
 if (!globalThis.ReadableStream) {
-  try {
-    Object.assign(globalThis, require('node:stream/web'))
-  } catch (error) {
-		// TODO: Remove when only supporting node >= 16.5.0
+	// `node:stream/web` got introduced in v16.5.0 as experimental
+	// and it's preferred over the polyfilled version. So we also
+	// suppress the warning that gets emitted by NodeJS for using it.
+	try {
+		const process = require('node:process')
+		const { emitWarning } = process
+		try {
+			process.emitWarning = () => {}
+			Object.assign(globalThis, require('node:stream/web'))
+			process.emitWarning = emitWarning
+		} catch (error) {
+			process.emitWarning = emitWarning
+			throw error
+		}
+	} catch (error) {
+		// fallback to polyfill implementation
     Object.assign(globalThis, require('web-streams-polyfill/dist/ponyfill.es2018.js'))
   }
 }
 
 try {
-  const {Blob} = require('buffer')
+	// Don't use node: prefix for this, require+node: is not supported until node v14.14
+	// Only `import()` can use prefix in 12.20 and later
+  const { Blob } = require('buffer')
   if (Blob && !Blob.prototype.stream) {
 		Blob.prototype.stream = function name(params) {
 			let position = 0;
