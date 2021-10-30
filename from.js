@@ -1,6 +1,6 @@
-import {statSync, createReadStream, promises as fs} from 'fs';
-import {basename} from 'path';
-import {MessageChannel} from 'worker_threads';
+import {statSync, createReadStream, promises as fs} from 'node:fs';
+import {basename} from 'node:path';
+import {MessageChannel} from 'node:worker_threads';
 
 import File from './file.js';
 import Blob from './index.js';
