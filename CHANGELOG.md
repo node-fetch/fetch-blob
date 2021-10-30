@@ -5,15 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-(Unreleased)
-==================
-### Removed
--
-### Changed
--
-### Added
--
-### Fixed
+## v3.1.3
 - Allow usage of iterable object in Blob constructor. [#108]
 - Run test WPT test against our impl [#109]
 - File name are now casted to string [#109]
@@ -23,7 +15,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Suppress warning when importing `stream/web` [#114]
 
 ## v3.1.2
-
 - Improved typing
 - Fixed a bug where position in iterator did not increase
 
