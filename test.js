@@ -211,6 +211,7 @@ test('blob part backed up by filesystem', async t => {
   const blob = blobFromSync('./LICENSE')
   t.is(await blob.slice(0, 3).text(), license.slice(0, 3))
   t.is(await blob.slice(4, 11).text(), license.slice(4, 11))
+  t.is(await blob.slice(4, 11).slice(2, 5).text(), license.slice(4, 11).slice(2, 5))
 })
 
 test('Reading after modified should fail', async t => {
