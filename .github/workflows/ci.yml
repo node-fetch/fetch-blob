@@ -14,16 +14,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        node: ["17.3", engines]
+        node: ["17.3"]
         exclude:
           # On Windows, run tests with only the LTS environments.
           - os: windows-latest
-            node: engines
+            node: 17.3
           - os: windows-latest
             node: "14"
           # On macOS, run tests with only the LTS environments.
           - os: macOS-latest
-            node: engines
+            node: 17.3
           - os: macOS-latest
             node: "14"
 
@@ -32,17 +32,17 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Get Node.JS version from package.json
-        if: matrix.node == 'engines'
+        if: matrix.node == '17.3'
         id: get-version
         run: echo ::set-output name=node::$(npx --q minimum-node-version)
 
       - uses: actions/setup-node@v2-beta
-        if: matrix.node != 'engines'
+        if: matrix.node != '17.3'
         with:
           node-version: ${{ matrix.node }}
 
       - uses: actions/setup-node@v2-beta
-        if: matrix.node == 'engines'
+        if: matrix.node == '17.3'
         with:
           node-version: ${{steps.get-version.outputs.node}}
 
