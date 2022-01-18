@@ -15,41 +15,17 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         node: ["17.3"]
-        exclude:
-          # On Windows, run tests with only the LTS environments.
-          - os: windows-latest
-            node: 17.3
-          - os: windows-latest
-            node: "14"
-          # On macOS, run tests with only the LTS environments.
-          - os: macOS-latest
-            node: 17.3
-          - os: macOS-latest
-            node: "14"
 
     runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v2
-
-      - name: Get Node.JS version from package.json
-        if: matrix.node == '17.3'
-        id: get-version
-        run: echo ::set-output name=node::$(npx --q minimum-node-version)
-
-      - uses: actions/setup-node@v2-beta
-        if: matrix.node != '17.3'
+      - uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
-
-      - uses: actions/setup-node@v2-beta
-        if: matrix.node == '17.3'
-        with:
-          node-version: ${{steps.get-version.outputs.node}}
-
+          node-version: '17.3'
       - run: npm install
-
+      - run: npm test
       - run: npm run report -- --colors
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
