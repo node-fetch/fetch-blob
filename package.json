@@ -15,6 +15,8 @@
     ],
     "scripts": {
         "test": "node --experimental-loader ./test/http-loader.js ./test/test-wpt-in-node.js",
+        "report": "c8 --reporter json --reporter text npm run test",
+        "coverage": "npm run report && codecov -f coverage/coverage-final.json",
         "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js from.js"
     },
     "repository": "https://github.com/node-fetch/fetch-blob.git",
@@ -34,6 +36,7 @@
     "homepage": "https://github.com/node-fetch/fetch-blob#readme",
     "devDependencies": {
         "@types/node": "^17.0.9",
+        "c8": "^7.11.0",
         "typescript": "^4.5.4"
     },
     "funding": [

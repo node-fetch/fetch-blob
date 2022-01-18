@@ -26,8 +26,8 @@ async function * toIterator (parts, clone = true) {
       } else {
         yield part
       }
+    /* c8 ignore next 10 */
     } else {
-      /* c8 ignore start */
       // For blobs that have arrayBuffer but no stream method (nodes buffer.Blob)
       let position = 0, b = (/** @type {Blob} */ (part))
       while (position !== b.size) {
@@ -36,7 +36,6 @@ async function * toIterator (parts, clone = true) {
         position += buffer.byteLength
         yield new Uint8Array(buffer)
       }
-      /* c8 ignore end */
     }
   }
 }
