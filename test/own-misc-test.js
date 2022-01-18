@@ -213,4 +213,5 @@ promise_test(async () => {
   assert_equals(await blobFromSync('./LICENSE').slice(0, 3).text(), license.slice(0, 3).toString())
   assert_equals(await blobFromSync('./LICENSE').slice(4, 11).text(), license.slice(4, 11).toString())
   assert_equals(await blobFromSync('./LICENSE').slice(-11).text(), license.slice(-11).toString())
+  assert_equals(await blobFromSync('./LICENSE').slice(4, 11).slice(2, 5).text(), license.slice(4, 11).slice(2, 5).toString())
 }, 'slicing blobs backed up by filesystem returns correct string')

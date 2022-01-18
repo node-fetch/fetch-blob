@@ -76,7 +76,7 @@ class BlobDataItem {
       path: this.#path,
       lastModified: this.lastModified,
       size: end - start,
-      start
+      start: this.#start + start
     })
   }
 
