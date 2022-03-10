@@ -65,6 +65,9 @@ class BlobDataItem {
     this.#start = options.start
     this.size = options.size
     this.lastModified = options.lastModified
+    this.originalSize = options.originalSize === undefined
+      ? options.size
+      : options.originalSize
   }
 
   /**
@@ -75,17 +78,18 @@ class BlobDataItem {
     return new BlobDataItem({
       path: this.#path,
       lastModified: this.lastModified,
+      originalSize: this.originalSize,
       size: end - start,
       start: this.#start + start
     })
   }
 
   async * stream () {
-    const { mtimeMs } = await stat(this.#path)
+    const { mtimeMs, size } = await stat(this.#path)
     const start = this.#start
     const end = start + this.size - 1
 
-    if (mtimeMs > this.lastModified) {
+    if (mtimeMs > this.lastModified || this.originalSize !== size) {
       throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError')
     }
 
