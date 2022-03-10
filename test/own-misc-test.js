@@ -189,6 +189,12 @@ promise_test(async () => {
   assert_equals(await (await fileFrom('./LICENSE')).text(), license.toString())
 }, 'blob part backed up by filesystem slice correctly')
 
+promise_test(async () => {
+  fs.writeFileSync('temp', '')
+  await blobFromSync('./temp').text()
+  fs.unlinkSync('./temp')
+}, 'can read empty files')
+
 test(async () => {
   const blob = blobFromSync('./LICENSE')
   await new Promise(resolve => setTimeout(resolve, 2000))
