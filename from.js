@@ -86,16 +86,15 @@ class BlobDataItem {
 
   async * stream () {
     const { mtimeMs, size } = await stat(this.#path)
-    const start = this.#start
-    const end = start + this.size - 1
 
     if (mtimeMs > this.lastModified || this.originalSize !== size) {
       throw new DOMException('The requested file could not be read, typically due to permission problems that have occurred after a reference to a file was acquired.', 'NotReadableError')
     }
 
-    if (end > start) {
-      yield * createReadStream(this.#path, { start, end })
-    }
+    yield * createReadStream(this.#path, {
+      start: this.#start,
+      end: this.#start + this.size - 1
+    })
   }
 
   get [Symbol.toStringTag] () {
