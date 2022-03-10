@@ -1,6 +1,6 @@
 {
     "name": "fetch-blob",
-    "version": "3.1.4",
+    "version": "3.1.5",
     "description": "Blob & File implementation in Node.js, originally from node-fetch.",
     "main": "index.js",
     "type": "module",
