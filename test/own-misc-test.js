@@ -3,7 +3,14 @@
 
 import fs from 'node:fs'
 import buffer from 'node:buffer'
-import syncBlob, { blobFromSync, blobFrom, fileFromSync, fileFrom } from '../from.js'
+import syncBlob, {
+  blobFromSync,
+  blobFrom,
+  fileFromSync,
+  fileFrom,
+  createTemporaryBlob,
+  createTemporaryFile
+} from '../from.js'
 
 const license = fs.readFileSync('./LICENSE')
 
@@ -188,6 +195,38 @@ promise_test(async () => {
   assert_equals(await (await blobFrom('./LICENSE')).text(), license.toString())
   assert_equals(await (await fileFrom('./LICENSE')).text(), license.toString())
 }, 'blob part backed up by filesystem slice correctly')
+
+promise_test(async () => {
+  let blob
+  // Can construct a temporary blob from a string
+  blob = await createTemporaryBlob(license.toString())
+  assert_equals(await blob.text(), license.toString())
+
+  // Can construct a temporary blob from a async iterator
+  blob = await createTemporaryBlob(blob.stream())
+  assert_equals(await blob.text(), license.toString())
+
+  // Can construct a temporary file from a arrayBuffer
+  blob = await createTemporaryBlob(await blob.arrayBuffer())
+  assert_equals(await blob.text(), license.toString())
+
+  // Can construct a temporary file from a arrayBufferView
+  blob = await createTemporaryBlob(await blob.arrayBuffer().then(ab => new Uint8Array(ab)))
+  assert_equals(await blob.text(), license.toString())
+
+  // Can specify a mime type
+  blob = await createTemporaryBlob('abc', 'text/plain')
+  assert_equals(blob.type, 'text/plain')
+
+  // Can create files too
+  let file = await createTemporaryFile('abc', 'abc.txt', {
+    type: 'text/plain',
+    lastModified: 123
+  })
+  assert_equals(file.name, 'abc.txt')
+  assert_equals(file.size, 3)
+  assert_equals(file.lastModified, 123)
+}, 'creating temporary blob/file backed up by filesystem')
 
 promise_test(async () => {
   fs.writeFileSync('temp', '')
