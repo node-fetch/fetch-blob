@@ -63,11 +63,11 @@ const fromFile = (stat, path, type = '') => new File([new BlobDataItem({
  * NOTE: requires node.js v14 or higher to use FinalizationRegistry
  *
  * @param {*} data Same as fs.writeFile data
- * @param {string} [type] mimetype to use
+ * @param {BlobPropertyBag & {signal?: AbortSignal}} options
  * @param {AbortSignal} [signal] in case you wish to cancel the write operation
  * @returns {Promise<Blob>}
  */
-const createTemporaryBlob = async (data, type, signal) => {
+const createTemporaryBlob = async (data, {signal, type} = {}) => {
   registry = registry || new FinalizationRegistry(fs.unlink)
   tempDir = tempDir || await mkdtemp(realpathSync(tmpdir()) + sep)
   const id = `${i++}`

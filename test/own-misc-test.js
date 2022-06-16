@@ -215,7 +215,7 @@ promise_test(async () => {
   assert_equals(await blob.text(), license.toString())
 
   // Can specify a mime type
-  blob = await createTemporaryBlob('abc', 'text/plain')
+  blob = await createTemporaryBlob('abc', { type: 'text/plain' })
   assert_equals(blob.type, 'text/plain')
 
   // Can create files too
