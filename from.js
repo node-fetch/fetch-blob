@@ -1,11 +1,20 @@
-import { statSync, createReadStream, promises as fs } from 'node:fs'
-import { basename } from 'node:path'
+import {
+  realpathSync,
+  statSync,
+  rmdirSync,
+  createReadStream,
+  promises as fs
+} from 'node:fs'
+import { basename, sep, join } from 'node:path'
+import { tmpdir } from 'node:os'
+import process from 'node:process'
 import DOMException from 'node-domexception'
 
 import File from './file.js'
 import Blob from './index.js'
 
-const { stat } = fs
+const { stat, mkdtemp } = fs
+let i = 0, tempDir, registry
 
 /**
  * @param {string} path filepath on the disk
@@ -48,6 +57,42 @@ const fromFile = (stat, path, type = '') => new File([new BlobDataItem({
   lastModified: stat.mtimeMs,
   start: 0
 })], basename(path), { type, lastModified: stat.mtimeMs })
+
+/**
+ * Creates a temporary blob backed by the filesystem.
+ * NOTE: requires node.js v14 or higher to use FinalizationRegistry
+ *
+ * @param {*} data Same as fs.writeFile data
+ * @param {BlobPropertyBag & {signal?: AbortSignal}} options
+ * @param {AbortSignal} [signal] in case you wish to cancel the write operation
+ * @returns {Promise<Blob>}
+ */
+const createTemporaryBlob = async (data, {signal, type} = {}) => {
+  registry = registry || new FinalizationRegistry(fs.unlink)
+  tempDir = tempDir || await mkdtemp(realpathSync(tmpdir()) + sep)
+  const id = `${i++}`
+  const destination = join(tempDir, id)
+  if (data instanceof ArrayBuffer) data = new Uint8Array(data)
+  await fs.writeFile(destination, data, { signal })
+  const blob = await blobFrom(destination, type)
+  registry.register(blob, destination)
+  return blob
+}
+
+/**
+ * Creates a temporary File backed by the filesystem.
+ * Pretty much the same as constructing a new File(data, name, options)
+ *
+ * NOTE: requires node.js v14 or higher to use FinalizationRegistry
+ * @param {*} data
+ * @param {string} name
+ * @param {FilePropertyBag & {signal?: AbortSignal}} opts
+ * @returns {Promise<File>}
+ */
+const createTemporaryFile = async (data, name, opts) => {
+  const blob = await createTemporaryBlob(data)
+  return new File([blob], name, opts)
+}
 
 /**
  * This is a blob backed up by a file on the disk
@@ -102,5 +147,18 @@ class BlobDataItem {
   }
 }
 
+process.once('exit', () => {
+  tempDir && rmdirSync(tempDir, { recursive: true })
+})
+
 export default blobFromSync
-export { File, Blob, blobFrom, blobFromSync, fileFrom, fileFromSync }
+export {
+  Blob,
+  blobFrom,
+  blobFromSync,
+  createTemporaryBlob,
+  File,
+  fileFrom,
+  fileFromSync,
+  createTemporaryFile
+}
