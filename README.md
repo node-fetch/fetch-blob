@@ -112,8 +112,8 @@ let blob = await createTemporaryBlob(res.body, { type, signal })
 blob = undefined // loosing references will delete the file from disk
 ```
 
-`createTemporaryBlob(data, { type, signal })`
-`createTemporaryFile(data, FileName, { type, signal, lastModified })`
+- `createTemporaryBlob(data, { type, signal })`
+- `createTemporaryFile(data, FileName, { type, signal, lastModified })`
 
 ### Creating Blobs backed up by other async sources
 Our Blob & File class are more generic then any other polyfills in the way that it can accept any blob look-a-like item
