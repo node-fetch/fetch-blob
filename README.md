@@ -7,6 +7,8 @@
 
 A Blob implementation in Node.js, originally from [node-fetch](https://github.com/node-fetch/node-fetch).
 
+Use the built-in [`Blob`](https://nodejs.org/docs/latest-v18.x/api/buffer.html#class-blob) in Node.js 18 and later.
+
 ## Installation
 
 ```sh
