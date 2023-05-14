@@ -1,19 +1,32 @@
 /*! fetch-blob. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
 
-// TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
-// Node has recently added whatwg stream into core
-
-import './streams.cjs'
+if (!globalThis.ReadableStream) {
+  try {
+    const process = await import('node:process').then(m => m.default)
+    const { emitWarning } = process
+    try {
+      process.emitWarning = () => {}
+      const streams = await import('node:stream/web').then(m => m.default)
+      Object.assign(globalThis, streams)
+      process.emitWarning = emitWarning
+    } catch (error) {
+      process.emitWarning = emitWarning
+      throw error
+    }
+  } catch (error) {}
+}
 
 // 64 KiB (same size chrome slice theirs blob into Uint8array's)
 const POOL_SIZE = 65536
 
-/** @param {(Blob | Uint8Array)[]} parts */
-async function * toIterator (parts, clone = true) {
+/**
+ * @param {(Blob | Uint8Array)[]} parts
+ * @param {boolean} clone
+ * @returns {AsyncIterableIterator<Uint8Array>}
+ */
+async function * toIterator (parts, clone) {
   for (const part of parts) {
-    if ('stream' in part) {
-      yield * (/** @type {AsyncIterableIterator<Uint8Array>} */ (part.stream()))
-    } else if (ArrayBuffer.isView(part)) {
+    if (ArrayBuffer.isView(part)) {
       if (clone) {
         let position = part.byteOffset
         const end = part.byteOffset + part.byteLength
@@ -26,16 +39,9 @@ async function * toIterator (parts, clone = true) {
       } else {
         yield part
       }
-    /* c8 ignore next 10 */
     } else {
-      // For blobs that have arrayBuffer but no stream method (nodes buffer.Blob)
-      let position = 0, b = (/** @type {Blob} */ (part))
-      while (position !== b.size) {
-        const chunk = b.slice(position, Math.min(b.size, position + POOL_SIZE))
-        const buffer = await chunk.arrayBuffer()
-        position += buffer.byteLength
-        yield new Uint8Array(buffer)
-      }
+      // @ts-ignore TS Think blob.stream() returns a node:stream
+      yield * part.stream()
     }
   }
 }
@@ -139,11 +145,6 @@ const _Blob = class Blob {
    * @return {Promise<ArrayBuffer>}
    */
   async arrayBuffer () {
-    // Easier way... Just a unnecessary overhead
-    // const view = new Uint8Array(this.size);
-    // await this.stream().getReader({mode: 'byob'}).read(view);
-    // return view.buffer;
-
     const data = new Uint8Array(this.size)
     let offset = 0
     for await (const chunk of toIterator(this.#parts, false)) {
@@ -218,7 +219,7 @@ const _Blob = class Blob {
       }
     }
 
-    const blob = new Blob([], { type: String(type).toLowerCase() })
+    const blob = new Blob([], { type: `${type}` })
     blob.#size = span
     blob.#parts = blobParts
 
@@ -251,4 +252,3 @@ Object.defineProperties(_Blob.prototype, {
 
 /** @type {typeof globalThis.Blob} */
 export const Blob = _Blob
-export default Blob

@@ -5,36 +5,29 @@ import { get } from 'node:https'
 const fetch = url => new Promise(rs => get(url, rs))
 const cache = new URL('./.cache/', import.meta.url)
 
-/**
- * @param {string} specifier
- * @param {{
- *   conditions: !Array<string>,
- *   parentURL: !(string | undefined),
- * }} context
- * @param {Function} defaultResolve
- * @returns {Promise<{ url: string }>}
- */
-export async function resolve (specifier, context, defaultResolve) {
-  const { parentURL = null } = context
+export function resolve(specifier, context, nextResolve) {
+  const { parentURL = null } = context;
 
   // Normally Node.js would error on specifiers starting with 'https://', so
   // this hook intercepts them and converts them into absolute URLs to be
   // passed along to the later hooks below.
   if (specifier.startsWith('https://')) {
     return {
-      url: specifier
-    }
+      shortCircuit: true,
+      url: specifier,
+    };
   } else if (parentURL && parentURL.startsWith('https://')) {
     return {
-      url: new URL(specifier, parentURL).href
-    }
+      shortCircuit: true,
+      url: new URL(specifier, parentURL).href,
+    };
   }
 
   // Let Node.js handle all other specifiers.
-  return defaultResolve(specifier, context, defaultResolve)
+  return nextResolve(specifier);
 }
 
-export async function load (url, context, defaultLoad) {
+export async function load(url, context, nextLoad) {
   // For JavaScript to be loaded over the network, we need to fetch and
   // return it.
   if (url.startsWith('https://')) {
@@ -52,14 +45,15 @@ export async function load (url, context, defaultLoad) {
       fs.writeFileSync(cachedFile, data)
     }
 
+    // This example assumes all network-provided JavaScript is ES module
+    // code.
     return {
-      // This example assumes all network-provided JavaScript is ES module
-      // code.
       format: 'module',
-      source: data
+      shortCircuit: true,
+      source: data,
     }
   }
 
   // Let Node.js handle all other URLs.
-  return defaultLoad(url, context, defaultLoad)
+  return nextLoad(url);
 }

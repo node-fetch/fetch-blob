@@ -10,8 +10,8 @@ import { tmpdir } from 'node:os'
 import process from 'node:process'
 import DOMException from 'node-domexception'
 
-import File from './file.js'
-import Blob from './index.js'
+import { File } from './file.js'
+import { Blob } from './index.js'
 
 const { stat, mkdtemp } = fs
 let i = 0, tempDir, registry
