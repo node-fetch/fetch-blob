@@ -25,7 +25,7 @@
         "node-fetch"
     ],
     "engines": {
-        "node": ">=16.5"
+        "node": ">=16.7"
     },
     "author": "Jimmy Wärting <jimmy@warting.se> (https://jimmy.warting.se)",
     "license": "MIT",
