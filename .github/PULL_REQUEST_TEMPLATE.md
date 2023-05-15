@@ -12,9 +12,8 @@
 
 -------------------------------------------------------------------------------------------------
 
-<!-- Mark what you have done, Remove unnecessary ones. Add new tasks that may fit (like TODO's) -->
+<!-- Mark what you have done with [x], Remove unnecessary ones. Add new tasks that may fit (like TODO's) -->
 - [ ] I prefixed the PR-title with `docs: `, `fix(area): `, `feat(area): ` or `breaking(area): `
-- [ ] I updated ./CHANGELOG.md with a link to this PR or Issue
 - [ ] I updated the README.md
 - [ ] I Added unit test(s)
 
