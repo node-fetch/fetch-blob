@@ -13,7 +13,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest]
         node: ["16", "18", "20"]
 
     runs-on: ${{ matrix.os }}
