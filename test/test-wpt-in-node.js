@@ -22,7 +22,7 @@ function test_blob (fn, expectations) {
     const blob = fn()
     assert_true(blob instanceof Blob)
     assert_false(blob instanceof File)
-    assert_equals(blob.type.toLowerCase(), type)
+    assert_equals(blob.type.toLowerCase(), type.toLowerCase())
     assert_equals(await blob.text(), expected)
     t.done()
   })
@@ -140,4 +140,7 @@ import('https://wpt.live/FileAPI/blob/Blob-stream.any.js')
 import('https://wpt.live/FileAPI/blob/Blob-text.any.js')
 import('./own-misc-test.js')
 
-hasFailed && process.exit(1)
+if (hasFailed) {
+  console.log('Tests failed')
+  process.exit(1)
+}

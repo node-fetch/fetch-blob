@@ -63,11 +63,6 @@ test(() => {
   assert_equals(blobFromSync, syncBlob)
 }, 'default export is named exported blobFromSync')
 
-promise_test(async () => {
-  const { Blob, default: def } = await import('../index.js')
-  assert_equals(Blob, def)
-}, 'Can use named import - as well as default')
-
 // This was necessary to avoid large ArrayBuffer clones (slice)
 promise_test(async t => {
   const buf = new Uint8Array(65590)

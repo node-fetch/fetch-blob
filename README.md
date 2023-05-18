@@ -26,7 +26,6 @@ npm install fetch-blob
     - CommonJS was replaced with ESM
     - The node stream returned by calling `blob.stream()` was replaced with whatwg streams
     - (Read "Differences from other blobs" for more info.)
-
 </details>
 
 <details>
@@ -48,14 +47,10 @@ npm install fetch-blob
 
 ```js
 // Ways to import
-// (PS it's dependency free ESM package so regular http-import from CDN works too)
-import Blob from 'fetch-blob'
-import File from 'fetch-blob/file.js'
+import { Blob } from 'fetch-blob'
+import { File } from 'fetch-blob/file.js'
 
-import {Blob} from 'fetch-blob'
-import {File} from 'fetch-blob/file.js'
-
-const {Blob} = await import('fetch-blob')
+const { Blob } = await import('fetch-blob')
 
 
 // Ways to read the blob:
@@ -75,7 +70,6 @@ It will not read the content into memory. It will only stat the file for last mo
 
 ```js
 // The default export is sync and use fs.stat to retrieve size & last modified as a blob
-import blobFromSync from 'fetch-blob/from.js'
 import {File, Blob, blobFrom, blobFromSync, fileFrom, fileFromSync} from 'fetch-blob/from.js'
 
 const fsFile = fileFromSync('./2-GiB-file.bin', 'application/octet-stream')
@@ -119,7 +113,8 @@ blob = undefined // loosing references will delete the file from disk
 
 ### Creating Blobs backed up by other async sources
 Our Blob & File class are more generic then any other polyfills in the way that it can accept any blob look-a-like item
-An example of this is that our blob implementation can be constructed with parts coming from [BlobDataItem](https://github.com/node-fetch/fetch-blob/blob/8ef89adad40d255a3bbd55cf38b88597c1cd5480/from.js#L32) (aka a filepath) or from [buffer.Blob](https://nodejs.org/api/buffer.html#buffer_new_buffer_blob_sources_options), It dose not have to implement all the methods - just enough that it can be read/understood by our Blob implementation. The minium requirements is that it has `Symbol.toStringTag`, `size`, `slice()` and either a `stream()` or a `arrayBuffer()` method. If you then wrap it in our Blob or File `new Blob([blobDataItem])` then you get all of the other methods that should be implemented in a blob or file
+An example of this is that our blob implementation can be constructed with parts coming from [BlobDataItem](https://github.com/node-fetch/fetch-blob/blob/8ef89adad40d255a3bbd55cf38b88597c1cd5480/from.js#L32) (aka a filepath) or from [buffer.Blob](https://nodejs.org/api/buffer.html#buffer_new_buffer_blob_sources_options), It dose not have to implement all the methods - just enough that it can be read/understood by our Blob implementation. The minium requirements is that it has `Symbol.toStringTag`, `size`, `slice()`, `stream()` methods (the stream method
+can be as simple as being a sync or async iterator that yields Uint8Arrays. If you then wrap it in our Blob or File `new Blob([blobDataItem])` then you get all of the other methods that should be implemented in a blob or file (aka: text(), arrayBuffer() and type and a ReadableStream)
 
 An example of this could be to create a file or blob like item coming from a remote HTTP request. Or from a DataBase
 
