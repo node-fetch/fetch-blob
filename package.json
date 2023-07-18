@@ -49,6 +49,6 @@
         }
     ],
     "dependencies": {
-        "node-domexception": "^1.0.0"
+        "node-domexception": "^2.0.1"
     }
 }
