@@ -25,9 +25,9 @@
         "node-fetch"
     ],
     "engines": {
-        "node": ">=16.7"
+        "node": ">=15"
     },
-    "author": "Jimmy Wärting <jimmy@warting.se> (https://jimmy.warting.se)",
+    "author": "Jimmy W\u00e4rting <jimmy@warting.se> (https://jimmy.warting.se)",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/node-fetch/fetch-blob/issues"
@@ -47,8 +47,5 @@
             "type": "paypal",
             "url": "https://paypal.me/jimmywarting"
         }
-    ],
-    "dependencies": {
-        "node-domexception": "^1.0.0"
-    }
+    ]
 }
